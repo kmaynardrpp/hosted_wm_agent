@@ -1,0 +1,206 @@
+guidelines.txt (MANDATORY — read & apply at the very start of the Analysis block; non-compliance = failure)
+
+LOCAL FILESYSTEM POLICY (NEVER use “/mnt/data” or “sandbox:”)
+- All files are local. Resolve the project root (ROOT) from the INFOZONE_ROOT env var or from the script’s parent directories.
+- Use only paths under ROOT and the first CSV’s directory (out_dir). Do not write or read from any sandbox path.
+- Always read text with UTF-8 and errors="ignore" to avoid Windows cp1252 issues.
+
+DataFrame safety (run first)
+- Duplicate-name guard (must run before any further ops):
+  if df.columns.duplicated().any():
+      df = df.loc[:, ~df.columns.duplicated()]
+- No collisions: never rename a column to a name that already exists.
+
+# IGNORE TRAILER
+- UNLESS EXPLICITLY REQUESTED IGNORE POSITIONS WITHIN 'TRAILER' ZONES WHENEVER PROCESSING ZONES
+
+Before compile/exec, STRIP Markdown fences if present:
+code = re.sub(r'^\s*```(?:python)?\s*|\s*```\s*$', '', code, flags=re.IGNORECASE|re.DOTALL)
+
+
+# === PDF BUILD CONTRACT (MANDATORY) ===
+- You MUST build a valid report dict with at least:
+    report = {"title": str, "meta": str, "sections": list}
+  Required sections:
+    1) A "summary" section: {"type":"summary","title":..., "bullets":[...]}
+    2) Optional "table" sections: {"type":"table","title":..., "data":[{...}], "headers":[...], "rows_per_page": int}
+    3) Optional "charts" section: {"type":"charts","title":..., "figures":[matplotlib.figure.Figure, ...]}
+
+- Figures passed to the PDF builder MUST be live Matplotlib Figure objects.
+  * Filter out None:  figs = [f for f in figs if getattr(f,"savefig",None)]
+  * DO NOT pass file paths or Axes.
+  * Save PNGs FIRST (dpi=120), but DO NOT close the figures until AFTER PDF is built.
+
+- ALWAYS create the output directory:
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+- PDF builder call with REQUIRED fallback (no silent exit):
+    try:
+        safe_build_pdf(report, str(pdf_path), logo_path=str(ROOT / "redpoint_logo.png"))
+    except Exception as e:
+        import traceback
+        print("Error Report:")
+        print(f"PDF build failed: {e.__class__.__name__}: {e}")
+        traceback.print_exc()
+        try:
+            report = make_lite(report)  # reduce figures/rows
+            safe_build_pdf(report, str(pdf_path), logo_path=str(ROOT / "redpoint_logo.png"))
+        except Exception as e2:
+            print("Error Report:")
+            print(f"Lite PDF failed: {e2.__class__.__name__}: {e2}")
+            traceback.print_exc()
+            raise SystemExit(1)
+
+- Only AFTER a successful PDF build, print the markdown file links in EXACT format:
+    print(f"[Download the PDF](file:///{pdf_path.resolve().as_posix()})")
+    for i, p in enumerate(png_paths, 1):
+        print(f"[Download Plot {i}](file:///{p.resolve().as_posix()})")
+
+# === TIME & PANDAS (CONSISTENCY) ===
+- Use lowercase 'h' with pandas .dt.floor("h") (uppercase 'H' is deprecated).
+- Canonical timestamp column is ts_utc (UTC, ISO 'Z'). Do not rename ts_utc to ts.
+
+# === ERROR REPORTING (CLARITY) ===
+- If schema or I/O checks fail, print an Error Report with the exception class, message AND a short traceback.
+- Never print a generic "Failed to write PDF" without the exception details.
+
+# === SECTION SAFETY (AVOID EMPTY REPORTS) ===
+- If no data is available, still produce a minimal "summary" section explaining the condition and build the PDF.
+- For "charts" sections, if there are 0 valid figures after filtering, omit the section entirely (do not pass an empty figures list).
+
+- Insert a Matplotlib ≥3.9 compatibility shim: if FigureCanvasAgg lacks tostring_rgb, define it via buffer_rgba()->RGB bytes BEFORE calling safe_build_pdf.
+
+Timestamp canon (single source of truth)
+- Create one UTC analysis column from ts_iso (else ts):
+  ts_src = df["ts_iso"] if "ts_iso" in df.columns else df["ts"]
+  df["ts_utc"] = pandas.to_datetime(ts_src, utc=True, errors="coerce")
+- Use ts_utc for all analytics (filters, zones, windows).
+- Never rename ts_utc to "ts". Keep ts_iso / ts_short for display only.
+- In meta strings, do not double-suffix "Z".
+- Timezone safety: NEVER make timezone-aware datetimes naive via .astype(...); always do `.dt.tz_convert('UTC').dt.tz_localize(None)` (or `.dt.tz_localize(None)`) before any `.astype('datetime64[ns]')` or plotting. :contentReference[oaicite:0]{index=0}
+
+- Use matplotlib.colormaps.get_cmap("tab10") instead of plt.cm.get_cmap("tab10").
+
+Required columns (early schema validation)
+- After first CSV ingestion, the script must verify:
+  • Identity: at least one of “trackable” OR “trackable_uid”
+  • Trade column: “trade” (string; may be empty)
+  • Positions: “x” AND “y”
+  • If zones analytics are requested: either “zone_name” exists OR zones must be computed via polygons
+- If requirements fail: print:
+  Error Report:
+  Missing required columns for analysis.
+  Columns detected: <comma-separated list>
+  Then exit.
+
+Zones (only if asked)
+- For zones_process.compute_zone_intervals(...) / dwell_in_polygon(...):
+  Required args: id_col="trackable_uid", ts_col="ts_utc", x_col="x", y_col="y".
+- Ensure non-NA ts_utc, x, y in the rows passed; if no valid/active polygons, skip zones.
+- No downsampling inside zones processing.
+
+Ad-hoc polygon inputs (prevent ambiguous truth / shape issues)
+- Always pass a Python list[tuple(float,float)] (not numpy arrays):
+  def _to_xy(p):
+      if isinstance(p, dict): return (float(p["x"]), float(p["y"]))
+      x, y = p; return (float(x), float(y))
+  poly = [_to_xy(p) for p in user_points]
+- Sanitize before zones: drop consecutive duplicates and the closing duplicate (last==first); require ≥3 unique points.
+  If invalid → print Error Report and do not call zones helpers.
+
+Floorplan scaling (WORLD-mm; display origin at bottom-left)
+- From floorplans.json: s=image_scale*100 mm/px; center (x_c,y_c), raster W×H px.
+- World rect: x_min=(x_c−W/2)*s, x_max=(x_c+W/2)*s, y_min=(y_c−H/2)*s, y_max=(y_c+H/2)*s.
+- Display shift: dx0=−x_min, dy0=−y_min. Plot raster at [0, x_max−x_min] × [0, y_max−y_min] with origin='upper'; plot points x’=x+dx0, y’=y+dy0.
+- Equal aspect; ~10% margin. Do not mutate underlying coordinates.
+
+Figures → PNG → PDF (exact sequence; LOCAL paths)
+- Create figures → save PNGs → pass live Figure objects to the report.
+- Save PNGs to “out_dir / f'info_zone_report_{report_date}_plot{i:02d}.png'”, dpi=120.
+- Do not use bbox_inches='tight'.
+- Do not close or clear figures before safe_build_pdf(...).
+- Build the PDF with string paths: safe_build_pdf(report, str(pdf_path), logo_path=str(LOGO))
+
+Tables contract
+- Never pass a pandas DataFrame to a table section. Convert to list-of-dicts:
+  cols = ["trackable","trade","ts_short","x","y","z"]
+  rows = df[cols].head(50).fillna("").astype(str).to_dict(orient="records")
+  sections.append({"type":"table","title":"Evidence","data":rows,"headers":cols,"rows_per_page":24})
+
+Link printing (strict local format; NO sandbox)
+- On success, print only:
+  [Download the PDF](file:///ABS/PATH/TO/PDF)
+  [Download Plot 1](file:///ABS/PATH/TO/PNG1)
+  [Download Plot 2](file:///ABS/PATH/TO/PNG2)
+  ...
+- If no figures: print only the PDF link.
+- On failure: print only:
+  Error Report:
+  <1–2 line reason>
+  (If caused by schema issues, add one extra line with “Columns detected: ...”)
+
+- Ensure All Brackets () [] {} are closed when opened.
+
+Budgets (respect report_limits.py)
+- Keep figures ≤ MAX_FIGURES; keep tables/text within limits. Do not add charts to “fill space”.
+
+# Runner path & mapping requirements (LOCAL-ONLY)
+
+- Always resolve a project ROOT (prefer INFOZONE_ROOT env; otherwise this file's parent). Never rely on "/mnt/data".
+- When calling the extractor you MUST pass the local MAC map explicitly:
+    raw = extract_tracks(str(csv_path), mac_map_path=str(ROOT / "trackable_objects.json"))
+  If raw["audit"]["mac_map_loaded"] is False, print an Error Report and exit (blank trades/names are unacceptable).
+
+- When selecting charts, also pass explicit paths for floorplan and zones:
+    floorplans_path       = str(ROOT / "floorplans.json")
+    floorplan_image_path  = str(ROOT / "floorplan.jpeg")   # or .png
+    zones_path            = str(ROOT / "zones.json")
+
+- Canonical timestamp column is ts_utc (UTC, ISO 'Z'). If the CSV has only "ts" or "timestamp",
+  parse to UTC and populate ts_utc. Never rename ts_utc to "ts". Downstream zone analytics expect ts_col="ts_utc".
+
+- Save every Matplotlib figure to PNG (DPI 120) and pass the LIVE figures to the PDF builder.
+  Print ONLY "file:///..." links to the produced PDF and PNGs.
+
+
+Large-data mode (200 MB / 5-day) — memory-safe, single-pass rules
+- Per-file processing (no giant concatenations): for each CSV,
+  • call extract_tracks(file)
+  • build a DataFrame for that file only
+  • immediately apply duplicate-name guard and ts_utc
+- If zones requested: run compute_zone_intervals(...) on that file’s valid rows and, if intervals are large, append to a **local** JSONL buffer under out_dir:
+  jsonl_path = out_dir / "_wk_intervals.jsonl"  # utf-8 append
+  Do not keep all intervals in RAM.
+- If no zones: compute only the per-file aggregates needed (e.g., hourly counts, trade sums), then merge into small Python dicts kept in RAM.
+- After each file: del any large DataFrames and plt.close('all') (safe after PNG export).
+- Finalization pass: after all files processed, read small in-RAM dicts (and stream-read the JSONL if created) to build final summaries and figures.
+- Column pruning: restrict operations to needed columns (trackable, trackable_uid, trade, ts, ts_iso, x, y, z, ts_short, zone_name).
+- Casting: cast x,y to numeric only when needed; keep strings otherwise.
+
+Kernel robustness (timeouts/memory)
+- Keep conclusions and visuals conclusion-driven (use context.txt for narrative).
+- Wrap heavy blocks in try/except (MemoryError, KeyboardInterrupt) and switch to Minimal-Report Mode:
+  summary bullets + one compact evidence table + audit → write PDF; print only the PDF link (no PNGs). This counts as success if the PDF exists.
+- Prefer vectorized operations; avoid per-row Python loops.
+
+# Generation Quality Gates (must satisfy BEFORE execution)
+- The generated script must compile. The model must internally ensure the code passes:
+    compile(<full_script_str>, "<generated>", "exec")
+- All “columns detected” / schema-print lines MUST use:
+    print(f"Columns detected: {','.join(df.columns.astype(str))}")
+- Avoid string concatenation for logs; prefer:
+    print(f"... {value} ...")
+- No placeholder/intentional errors. Any validation error must be handled, not left as an intentional fault.
+
+
+I/O Compliance
+MAC → TRACKABLE → TRADE (Local-only, REQUIRED)
+- Runners MUST pass the local MAC map to the extractor:
+    raw = extract_tracks(str(csv_path), mac_map_path=str(ROOT / "trackable_objects.json"))
+- If raw["audit"]["mac_map_loaded"] == False, print an Error Report and exit.
+- Trade must be inferred from the FINAL trackable label (post-mapping); do not attempt trade inference before name resolution.
+
+
+Compliance (critical)
+- Reading and applying this guidelines.txt at the start of Analysis is mandatory.
+- Non-compliance (renaming ts_utc to ts; numpy arrays as polygons; DataFrames in tables; duplicate column names; ignoring large-data mode when input is big; using /mnt/data or sandbox links) is a failure condition.

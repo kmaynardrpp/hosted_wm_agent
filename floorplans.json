@@ -1,0 +1,49 @@
+{
+    "floorplans": [
+        {
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-09-04T01:29:26.000Z",
+            "current_scale": 0.5215732701920547,
+            "data_type": "JPEG",
+            "display_name": "Updated Floorplan 09032025.jpeg",
+            "filename": "Updated Floorplan 09032025.jpeg",
+            "height": 854,
+            "image_offset_x": 682,
+            "image_offset_y": 602,
+            "image_rotation": 0,
+            "image_scale": 0.754064,
+            "img_blob": null,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "selected": 0,
+            "size": 335889,
+            "sublocation_id": 5,
+            "sublocation_uid": "a5oicOTMSZqwG4Ja8xVeFQ",
+            "uid": "mHT3SuDGTsqH5I4uqKsfoQ",
+            "updated_at": "2025-09-10T06:48:58.000Z",
+            "url": "uploads/floorplan/image/Updated Floorplan 09032025.jpeg",
+            "width": 1170
+        },
+        {
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-29T23:49:43.000Z",
+            "data_type": "PNG",
+            "display_name": "Generic Trailer Floorplan.png",
+            "filename": "Generic Trailer Floorplan.png",
+            "height": 438,
+            "image_offset_x": 768,
+            "image_offset_y": 262,
+            "image_rotation": 0,
+            "image_scale": 0.083377,
+            "img_blob": null,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "selected": 0,
+            "size": 36212,
+            "sublocation_id": 6,
+            "sublocation_uid": "4_kF-L7dSO_PlOj3DocURw",
+            "uid": "mcFXSNQlQ8iZwJaKLgbJbQ",
+            "updated_at": "2025-09-10T17:59:08.000Z",
+            "url": "uploads/floorplan/image/Generic Trailer Floorplan.png",
+            "width": 1465
+        }
+    ]
+}

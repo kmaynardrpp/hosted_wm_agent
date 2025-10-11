@@ -1,0 +1,8 @@
+/* src/index.css */
+@import "tailwindcss";
+
+/* optional extras used by the chat */
+.bubble { border-radius: 1rem; }
+.shadow-soft { box-shadow: 0 1px 2px rgba(0,0,0,.06), 0 1px 3px rgba(0,0,0,.1); }
+.art-iframe { width: 100%; height: 24rem; border: 0; }
+.msg-wrap { max-width: 900px; }

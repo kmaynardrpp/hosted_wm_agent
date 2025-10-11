@@ -1,0 +1,8 @@
+# requirements.txt
+openai>=1.0.0
+python-dotenv>=1.0.0   # optional, for .env handling
+requests>=2.31.0       # useful for any helper scripts
+pandas>=2.0.0          # likely needed by helper files (e.g. extractor.py)
+matplotlib>=3.8.0      # likely for plotting
+reportlab>=4.0.0       # for PDF creation
+numpy>=1.25.0

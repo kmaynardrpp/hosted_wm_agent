@@ -1,0 +1,4555 @@
+{
+    "trackable_objects": [
+        {
+            "acc_config": null,
+            "assoc_uid": "00Djf_UzRSe2EZPOPxKeAA",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:47.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "C95cZ_P7T1_ZMxMPjLoizw"
+            ],
+            "mac_address": "E4956EA43F8A",
+            "name": "Plumbing_2",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": true,
+                "mac_address": "e4956ea43f8a",
+                "node_id": 97,
+                "parent_sublocation_uid": "4_kF-L7dSO_PlOj3DocURw",
+                "responsive": true
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "show": false,
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "kplZNvjQTaus1ftIQaEEhg",
+            "updated_at": "2025-09-15T02:25:26.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "WNKotSMbQJCXGEQJKevQHA",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:38.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "6moxSYnGTb2_pfJqKsV_cA"
+            ],
+            "mac_address": "E4956EA43AF0",
+            "name": "Painter_7",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": true,
+                "mac_address": "e4956ea43af0",
+                "node_id": 14,
+                "parent_sublocation_uid": "4_kF-L7dSO_PlOj3DocURw",
+                "responsive": true
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "show": false,
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "xi0zOAYSTpuf2lMdLe98XQ",
+            "updated_at": "2025-09-15T02:25:10.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "QqsoT7sdR5OPGdeCO5B2Dw",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:45.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "sS6l9O_TQuOTBFYg5nD2Og"
+            ],
+            "mac_address": "E4956EA43880",
+            "name": "Concrete_5",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": true,
+                "mac_address": "e4956ea43880",
+                "node_id": 63,
+                "parent_sublocation_uid": "4_kF-L7dSO_PlOj3DocURw",
+                "responsive": true
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "show": false,
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "bm-Pt-ujSke3Ck0Nn0tFag",
+            "updated_at": "2025-09-15T02:24:01.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "dMtbsKvzRYiZDnRdzrvhZw",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:44.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "z46y01CWQKqiZjFMjSC8Jg"
+            ],
+            "mac_address": "E4956EA43596",
+            "name": "Flooring_3",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": true,
+                "mac_address": "e4956ea43596",
+                "node_id": 86,
+                "parent_sublocation_uid": "4_kF-L7dSO_PlOj3DocURw",
+                "responsive": true
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "show": false,
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "SlRyQKqyS8ukEjYFHUNxLg",
+            "updated_at": "2025-09-15T02:24:52.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "ZrirARgaTi6zlmV7IGraEQ",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:41.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "-A7nXCqoQdyw2lhhnLFA8w"
+            ],
+            "mac_address": "E4956EA4471F",
+            "name": "Refrig_5",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": false,
+                "mac_address": "e4956ea4471f",
+                "node_id": 60,
+                "parent_sublocation_uid": "4_kF-L7dSO_PlOj3DocURw",
+                "responsive": false
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "c6DsUFkFQoGB_qzk2nVyFg",
+            "updated_at": "2025-09-15T02:26:03.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "73lIaFmWQlmOK62dy5ggQg",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:45.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "lqcUlEg6Srm_0PHM89-xbg"
+            ],
+            "mac_address": "E4956EA44254",
+            "name": "Blgd Signage_1",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": false,
+                "mac_address": "e4956ea44254",
+                "node_id": 34,
+                "parent_sublocation_uid": "4_kF-L7dSO_PlOj3DocURw",
+                "responsive": false
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "Pz0SCC8qSwuyeLF4qw3Pew",
+            "updated_at": "2025-09-15T02:23:18.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "9Pe7RF_uQsqB0X2vDcGWJg",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:37.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "7bbtWWy-SMWRHlZkaobzWg"
+            ],
+            "mac_address": "E4956EA434DF",
+            "name": "Carpentry_4",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": true,
+                "mac_address": "e4956ea434df",
+                "node_id": 52,
+                "parent_sublocation_uid": "a5oicOTMSZqwG4Ja8xVeFQ",
+                "responsive": true
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "show": false,
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "GjKBaDk3TnmPWx0mQzvRDg",
+            "updated_at": "2025-09-15T02:22:14.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "Oes00vPBTaO2XwCUVQ__CQ",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:38.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "6moxSYnGTb2_pfJqKsV_cA"
+            ],
+            "mac_address": "E4956EA445F0",
+            "name": "Painter_3",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": false,
+                "mac_address": "e4956ea445f0",
+                "node_id": 23,
+                "parent_sublocation_uid": "4_kF-L7dSO_PlOj3DocURw",
+                "responsive": false
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "as8XaUcWRhmiSZP9W_YBnQ",
+            "updated_at": "2025-09-15T02:25:10.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "6liotcL5RgOSzPOqRaBtmA",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:43.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "yVGIzvePR6KvitZkgmVUuQ"
+            ],
+            "mac_address": "E4956EA443C5",
+            "name": "Striping_7",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": false,
+                "mac_address": "e4956ea443c5",
+                "node_id": 95,
+                "parent_sublocation_uid": "4_kF-L7dSO_PlOj3DocURw",
+                "responsive": false
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "xxxL1UBqS7ek9gcR0QPNKw",
+            "updated_at": "2025-09-15T02:26:04.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "meXOYQ_eSG_2lBo8Y0INng",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:39.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "gndOSis4Smm6zjwFun1W6w"
+            ],
+            "mac_address": "E4956EA43F66",
+            "name": "Steel_3",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": true,
+                "mac_address": "e4956ea43f66",
+                "node_id": 108,
+                "parent_sublocation_uid": "4_kF-L7dSO_PlOj3DocURw",
+                "responsive": true
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "show": false,
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "PFcRvYOKRcG2DvC8kH2xrQ",
+            "updated_at": "2025-09-15T02:26:04.000Z"
+        },
+        {
+            "acc_config": null,
+            "bt_config": null,
+            "category": "UNSPECIFIED",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-09-10T04:34:02.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": null,
+            "name": "RPP_DL_A585E0",
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "7-GuMMWpRfONXjohfyQsHA",
+            "updated_at": "2025-09-25T05:37:50.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "ovCWufEkSFG7P9YKSGtUvw",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:44.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "z46y01CWQKqiZjFMjSC8Jg"
+            ],
+            "mac_address": "E4956EA444A8",
+            "name": "Flooring_1",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": true,
+                "mac_address": "e4956ea444a8",
+                "node_id": 61,
+                "parent_sublocation_uid": "4_kF-L7dSO_PlOj3DocURw",
+                "responsive": true
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "show": false,
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "dxuK7BhuRrG-vLd4vBdItw",
+            "updated_at": "2025-09-15T02:24:52.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "nVCsdcA5QoKsmbzS66JvFA",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:48.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "oTlbGhpLRYKF0sxCn1VS1w"
+            ],
+            "mac_address": "E4956EA43861",
+            "name": "Electrician_3",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": false,
+                "mac_address": "e4956ea43861",
+                "node_id": 81,
+                "parent_sublocation_uid": "a5oicOTMSZqwG4Ja8xVeFQ",
+                "responsive": false
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "jpYkuEVwTQ6XrMaYXZKVow",
+            "updated_at": "2025-09-15T02:20:43.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "TNjx_87GQluStusqnj-1yQ",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:46.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "k4eAvhvWQ-i3IoYMHeGrhA"
+            ],
+            "mac_address": "E4956EA433E5",
+            "name": "Fire_Spk_1",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": true,
+                "mac_address": "e4956ea433e5",
+                "node_id": 91,
+                "parent_sublocation_uid": "4_kF-L7dSO_PlOj3DocURw",
+                "responsive": true
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "show": false,
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "v9uagGHtSHSqrErs_5OUpA",
+            "updated_at": "2025-09-15T02:24:36.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "uDi7VkGPSMC2wfTPP3YspQ",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:47.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "5NpDo-NzSP6hzmCKPMTgtQ"
+            ],
+            "mac_address": "E4956EA445AA",
+            "name": "EMS_1",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": true,
+                "mac_address": "e4956ea445aa",
+                "node_id": 98,
+                "parent_sublocation_uid": "4_kF-L7dSO_PlOj3DocURw",
+                "responsive": true
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "show": false,
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "ZTFYlsH8RoqJ7EywwrL8lA",
+            "updated_at": "2025-09-15T02:24:20.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "89zBlz0TRhq6qjkYpMtJdg",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:46.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "k4eAvhvWQ-i3IoYMHeGrhA"
+            ],
+            "mac_address": "E4956EA43A86",
+            "name": "Fire_Spk_4",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": true,
+                "mac_address": "e4956ea43a86",
+                "node_id": 59,
+                "parent_sublocation_uid": "4_kF-L7dSO_PlOj3DocURw",
+                "responsive": true
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "show": false,
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "VpSThDXQTkWGZUlPgvIHww",
+            "updated_at": "2025-09-15T02:24:36.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "xLFl678vRaK0BYcn0wWozg",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:38.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "6moxSYnGTb2_pfJqKsV_cA"
+            ],
+            "mac_address": "E4956EA435E0",
+            "name": "Painter_1",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": true,
+                "mac_address": "e4956ea435e0",
+                "node_id": 118,
+                "parent_sublocation_uid": "4_kF-L7dSO_PlOj3DocURw",
+                "responsive": true
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "show": false,
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "xt28IyKmQKatD4lP5-xplQ",
+            "updated_at": "2025-09-15T02:25:10.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "p0LXoYbBSdO6dnhBh_OXcg",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:39.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "gndOSis4Smm6zjwFun1W6w"
+            ],
+            "mac_address": "E4956EA4424B",
+            "name": "Steel_1",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": true,
+                "mac_address": "e4956ea4424b",
+                "node_id": 121,
+                "parent_sublocation_uid": "4_kF-L7dSO_PlOj3DocURw",
+                "responsive": true
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "show": false,
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "buoFPixCTQeZgHOb8URl0w",
+            "updated_at": "2025-09-15T02:26:04.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "ID8Ek9IaT__WJYj-JEu7Hw",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-13T15:54:29.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "C95cZ_P7T1_ZMxMPjLoizw"
+            ],
+            "mac_address": "E4956EA438C9",
+            "name": "Plumbing_6",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": false,
+                "mac_address": "e4956ea438c9",
+                "node_id": 88,
+                "parent_sublocation_uid": "4_kF-L7dSO_PlOj3DocURw",
+                "responsive": false
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "TC2uBEMtSla7SMzPjRY6-A",
+            "updated_at": "2025-09-15T02:25:26.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "9zr3D4ynQza9dEYuYs4b6Q",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:41.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "MVdzOB-EQO6lLJvxSAiSPA"
+            ],
+            "mac_address": "E4956EA43815",
+            "name": "Cleaning_8",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": false,
+                "mac_address": "e4956ea43815",
+                "node_id": 129,
+                "parent_sublocation_uid": "4_kF-L7dSO_PlOj3DocURw",
+                "responsive": false
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "zJMoncrrRxuP6x65b9ZteA",
+            "updated_at": "2025-09-15T02:23:43.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "iD6KOkUUTimQiRxmFJ2yEw",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:46.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "k4eAvhvWQ-i3IoYMHeGrhA"
+            ],
+            "mac_address": "E4956EA4395B",
+            "name": "Fire_Spk_2",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": true,
+                "mac_address": "e4956ea4395b",
+                "node_id": 25,
+                "parent_sublocation_uid": "4_kF-L7dSO_PlOj3DocURw",
+                "responsive": true
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "show": false,
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "0zQFu87mQnSlAFgYd7HJkw",
+            "updated_at": "2025-09-15T02:24:36.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "reSPQopiSVyo9lQE5Yy9Uw",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:37.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "7bbtWWy-SMWRHlZkaobzWg"
+            ],
+            "mac_address": "E4956EA44672",
+            "name": "Carpentry_1",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": true,
+                "mac_address": "e4956ea44672",
+                "node_id": 113,
+                "parent_sublocation_uid": "4_kF-L7dSO_PlOj3DocURw",
+                "responsive": true
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "show": false,
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "P7kNte9sTGiw7tnBgCM92Q",
+            "updated_at": "2025-09-15T02:21:48.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "c8yR11dkQ0WGzvIZxhO1aA",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:39.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "gndOSis4Smm6zjwFun1W6w"
+            ],
+            "mac_address": "E4956EA43F6E",
+            "name": "Steel_2",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": true,
+                "mac_address": "e4956ea43f6e",
+                "node_id": 92,
+                "parent_sublocation_uid": "4_kF-L7dSO_PlOj3DocURw",
+                "responsive": true
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "show": false,
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "l2jCQzmjRb216inU0ZomZQ",
+            "updated_at": "2025-09-15T02:26:04.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "m5lYsxjyQgeCYd_SBgFCzA",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:45.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "sS6l9O_TQuOTBFYg5nD2Og"
+            ],
+            "mac_address": "E4956EA43EFF",
+            "name": "Concrete_3",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": true,
+                "mac_address": "e4956ea43eff",
+                "node_id": 64,
+                "parent_sublocation_uid": "4_kF-L7dSO_PlOj3DocURw",
+                "responsive": true
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "show": false,
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "OaEiYQM5QUyAtUSwTiSFbw",
+            "updated_at": "2025-09-15T02:24:01.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "dNx6cA5DR6CBazceM2njUA",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:45.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "lqcUlEg6Srm_0PHM89-xbg"
+            ],
+            "mac_address": "E4956EA439D6",
+            "name": "Blgd Signage_2",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": false,
+                "mac_address": "e4956ea439d6",
+                "node_id": 87,
+                "parent_sublocation_uid": "4_kF-L7dSO_PlOj3DocURw",
+                "responsive": false
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "G3dYBDP8RYG0FPa6H1kxUg",
+            "updated_at": "2025-09-15T02:23:18.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "jKBdvtSKTg6QZGg5tZ804w",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:41.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "-A7nXCqoQdyw2lhhnLFA8w"
+            ],
+            "mac_address": "E4956EA432D4",
+            "name": "Refrig_1",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": true,
+                "mac_address": "e4956ea432d4",
+                "node_id": 100,
+                "parent_sublocation_uid": "4_kF-L7dSO_PlOj3DocURw",
+                "responsive": true
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "show": false,
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "Qmu46ZqUTdexwDk0ykkTeg",
+            "updated_at": "2025-09-15T02:26:03.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "LpJB9fxnSBGPHXqMfCVETQ",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:46.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "lqcUlEg6Srm_0PHM89-xbg"
+            ],
+            "mac_address": "E4956EA444AB",
+            "name": "Blgd Signage_5",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": false,
+                "mac_address": "e4956ea444ab",
+                "node_id": 33,
+                "parent_sublocation_uid": "4_kF-L7dSO_PlOj3DocURw",
+                "responsive": false
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "xLATy2WSRSWrYknW5g0RmQ",
+            "updated_at": "2025-09-15T02:23:18.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "CXE75oxpRkC8MW7kFZ7WUg",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:38.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "7bbtWWy-SMWRHlZkaobzWg"
+            ],
+            "mac_address": "E4956EA43F85",
+            "name": "Carpentry_2",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": true,
+                "mac_address": "e4956ea43f85",
+                "node_id": 110,
+                "parent_sublocation_uid": "a5oicOTMSZqwG4Ja8xVeFQ",
+                "responsive": true
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "show": false,
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "SAdAkdceQ1OUGGmd6fUlGA",
+            "updated_at": "2025-09-15T02:26:15.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "yan8aF-lSTipgNAf-obLCA",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:43.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "yVGIzvePR6KvitZkgmVUuQ"
+            ],
+            "mac_address": "E4956EA43DA2",
+            "name": "Striping_8",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": false,
+                "mac_address": "e4956ea43da2",
+                "node_id": 106,
+                "parent_sublocation_uid": "4_kF-L7dSO_PlOj3DocURw",
+                "responsive": false
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "tuUSchj0TVeK9O-cwbm01Q",
+            "updated_at": "2025-09-15T02:26:04.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "agjHiEGgSh6sBROgU-TeKQ",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:47.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "5NpDo-NzSP6hzmCKPMTgtQ"
+            ],
+            "mac_address": "E4956EA43E13",
+            "name": "EMS_5",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": true,
+                "mac_address": "e4956ea43e13",
+                "node_id": 119,
+                "parent_sublocation_uid": "4_kF-L7dSO_PlOj3DocURw",
+                "responsive": true
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "show": false,
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "caakKdhMSoivnRuih63FhQ",
+            "updated_at": "2025-09-15T02:24:20.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "XMX-aPaVRCe0b2GRuVHlAA",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:47.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "5NpDo-NzSP6hzmCKPMTgtQ"
+            ],
+            "mac_address": "E4956EA437C0",
+            "name": "EMS_3",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": true,
+                "mac_address": "e4956ea437c0",
+                "node_id": 85,
+                "parent_sublocation_uid": "4_kF-L7dSO_PlOj3DocURw",
+                "responsive": true
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "show": false,
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "EZ3s5MFlRGqmJTG_xpUpqw",
+            "updated_at": "2025-09-15T02:24:20.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "PgzOyM3ZSgW71F2qvhyJwQ",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:40.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "MVdzOB-EQO6lLJvxSAiSPA"
+            ],
+            "mac_address": "E4956EA4335D",
+            "name": "Cleaning_2",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": true,
+                "mac_address": "e4956ea4335d",
+                "node_id": 132,
+                "parent_sublocation_uid": "4_kF-L7dSO_PlOj3DocURw",
+                "responsive": true
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "show": false,
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "shWcX_MhQ0yr-1uh18MR1A",
+            "updated_at": "2025-09-15T02:23:43.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "JiwWIlfnQN6kz19EQFZv6Q",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:45.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "sS6l9O_TQuOTBFYg5nD2Og"
+            ],
+            "mac_address": "E4956EA43274",
+            "name": "Concrete_2",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": true,
+                "mac_address": "e4956ea43274",
+                "node_id": 107,
+                "parent_sublocation_uid": "4_kF-L7dSO_PlOj3DocURw",
+                "responsive": true
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "show": false,
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "pqCjVF7mT52W6bj6hRdGlw",
+            "updated_at": "2025-09-15T02:24:01.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "paqunKBzQ4KL5Xw_OMkY3A",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:48.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "C95cZ_P7T1_ZMxMPjLoizw"
+            ],
+            "mac_address": "E4956EA43520",
+            "name": "Plumbing_5",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": false,
+                "mac_address": "e4956ea43520",
+                "node_id": 44,
+                "parent_sublocation_uid": "4_kF-L7dSO_PlOj3DocURw",
+                "responsive": false
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "qxi_QKBRT323uzsWweMwbA",
+            "updated_at": "2025-09-15T02:25:26.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "7Y1_9kCaTJilaj3CY3Fjcg",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:45.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "sS6l9O_TQuOTBFYg5nD2Og"
+            ],
+            "mac_address": "E4956EA44459",
+            "name": "Concrete_1",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": true,
+                "mac_address": "e4956ea44459",
+                "node_id": 24,
+                "parent_sublocation_uid": "4_kF-L7dSO_PlOj3DocURw",
+                "responsive": true
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "show": false,
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "BvV82mScRw2Icg1Op_6frQ",
+            "updated_at": "2025-09-15T02:24:01.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "5HWV8p9hTBy_DFJNa-cZNQ",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:40.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "sOYzwiE0R0CRPyLMi6s0GQ"
+            ],
+            "mac_address": "E4956EA43761",
+            "name": "Mechanical_5",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": true,
+                "mac_address": "e4956ea43761",
+                "node_id": 66,
+                "parent_sublocation_uid": "4_kF-L7dSO_PlOj3DocURw",
+                "responsive": true
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "show": false,
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "j2JT6ClnS8m1rlxLt57Upg",
+            "updated_at": "2025-09-15T02:21:37.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "aBn4TDQORj2y0vyWxk7tYg",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:37.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "7bbtWWy-SMWRHlZkaobzWg"
+            ],
+            "mac_address": "E4956EA43B49",
+            "name": "Carpentry_3",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": true,
+                "mac_address": "e4956ea43b49",
+                "node_id": 68,
+                "parent_sublocation_uid": "a5oicOTMSZqwG4Ja8xVeFQ",
+                "responsive": true
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "show": false,
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "HoYH7lgAStqWV1QeUxqu0A",
+            "updated_at": "2025-09-15T02:22:07.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "NSO_wj1VTT_eWqJvw-vUfg",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:42.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "yVGIzvePR6KvitZkgmVUuQ"
+            ],
+            "mac_address": "E4956EA44557",
+            "name": "Striping_6",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": false,
+                "mac_address": "e4956ea44557",
+                "node_id": 89,
+                "parent_sublocation_uid": "4_kF-L7dSO_PlOj3DocURw",
+                "responsive": false
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "XNIzhuV9S32O_5Ot5jXmJw",
+            "updated_at": "2025-09-15T02:26:04.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "8I5xJDhFQ76ZBbAbwcYjKA",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:43.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "Bl4NhA82R2qrCB9Zkodoxw"
+            ],
+            "mac_address": "E4956EA435E2",
+            "name": "Roofing_1",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": false,
+                "mac_address": "e4956ea435e2",
+                "node_id": 35,
+                "parent_sublocation_uid": "4_kF-L7dSO_PlOj3DocURw",
+                "responsive": false
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "gF619GTNTSCKvcBvBLTiTg",
+            "updated_at": "2025-09-15T02:26:03.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "QSBPgDL9TPy8a9uPC3Ypxw",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:42.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "-A7nXCqoQdyw2lhhnLFA8w"
+            ],
+            "mac_address": "E4956EA4341A",
+            "name": "Refrig_7",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": false,
+                "mac_address": "e4956ea4341a",
+                "node_id": 31,
+                "parent_sublocation_uid": "4_kF-L7dSO_PlOj3DocURw",
+                "responsive": false
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "VP98RphxTlimQI8pTGh4_w",
+            "updated_at": "2025-09-15T02:26:03.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "_MOb6lHLSbaHmrqKgNuf6A",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:38.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "6moxSYnGTb2_pfJqKsV_cA"
+            ],
+            "mac_address": "E4956EA4350F",
+            "name": "Painter_6",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": true,
+                "mac_address": "e4956ea4350f",
+                "node_id": 96,
+                "parent_sublocation_uid": "4_kF-L7dSO_PlOj3DocURw",
+                "responsive": true
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "show": false,
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "-GjkYYYjQ9eVZDGpJGo6OA",
+            "updated_at": "2025-09-15T02:25:10.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "KOBpN8DjTim0C3KHY6lNPg",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:44.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "z46y01CWQKqiZjFMjSC8Jg"
+            ],
+            "mac_address": "E4956EA438A6",
+            "name": "Flooring_4",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": true,
+                "mac_address": "e4956ea438a6",
+                "node_id": 32,
+                "parent_sublocation_uid": "4_kF-L7dSO_PlOj3DocURw",
+                "responsive": true
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "show": false,
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "s9PC32jdQ3az8otjE0vWaw",
+            "updated_at": "2025-09-15T02:24:52.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "ik-zpO1YSm29R2F8snG2qw",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:47.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "C95cZ_P7T1_ZMxMPjLoizw"
+            ],
+            "mac_address": "E4956EA4353D",
+            "name": "Plumbing_1",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": true,
+                "mac_address": "e4956ea4353d",
+                "node_id": 114,
+                "parent_sublocation_uid": "4_kF-L7dSO_PlOj3DocURw",
+                "responsive": true
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "show": false,
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "I0Ac92BARrOzn95PUX61aw",
+            "updated_at": "2025-09-15T02:25:26.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "0012q5UTTWmjO9DXPFzqfw",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:44.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "z46y01CWQKqiZjFMjSC8Jg"
+            ],
+            "mac_address": "E4956EA4433B",
+            "name": "Flooring_2",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": true,
+                "mac_address": "e4956ea4433b",
+                "node_id": 109,
+                "parent_sublocation_uid": "4_kF-L7dSO_PlOj3DocURw",
+                "responsive": true
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "show": false,
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "pi8TXtZnRKG0Z78zeL-Lpw",
+            "updated_at": "2025-09-15T02:24:52.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "9Ks-vlaTTIaCGxwP-9wmiw",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:42.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "yVGIzvePR6KvitZkgmVUuQ"
+            ],
+            "mac_address": "E4956EA4474B",
+            "name": "Striping_2",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": false,
+                "mac_address": "e4956ea4474b",
+                "node_id": 80,
+                "parent_sublocation_uid": "4_kF-L7dSO_PlOj3DocURw",
+                "responsive": false
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "vMhEj9UVT3yyJkTDHRtwsQ",
+            "updated_at": "2025-09-15T02:26:04.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "jAJHDi6GTCapkxGC5gCc8Q",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:47.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "5NpDo-NzSP6hzmCKPMTgtQ"
+            ],
+            "mac_address": "E4956EA4359E",
+            "name": "EMS_4",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": true,
+                "mac_address": "e4956ea4359e",
+                "node_id": 26,
+                "parent_sublocation_uid": "4_kF-L7dSO_PlOj3DocURw",
+                "responsive": true
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "show": false,
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "5x1_FjjrT02nAdaAcW3jLg",
+            "updated_at": "2025-09-15T02:24:20.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "xpmlTTqXRrKr8P4xxMdRxg",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-13T15:54:29.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "sS6l9O_TQuOTBFYg5nD2Og"
+            ],
+            "mac_address": "E4956EA4A680",
+            "name": "Concrete_7",
+            "node": {
+                "cbid": "BEC8",
+                "fault": null,
+                "idle": false,
+                "mac_address": "e4956ea4a680",
+                "node_id": 50,
+                "parent_sublocation_uid": "4_kF-L7dSO_PlOj3DocURw",
+                "responsive": false
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "lEIEdFWPT3GoNmbD7fLw_Q",
+            "updated_at": "2025-09-15T02:24:01.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "aaTNzAKTQm2iVEyY2p-qLA",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:44.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "Bl4NhA82R2qrCB9Zkodoxw"
+            ],
+            "mac_address": "E4956EA43B80",
+            "name": "Roofing_8",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": false,
+                "mac_address": "e4956ea43b80",
+                "node_id": 65,
+                "parent_sublocation_uid": "4_kF-L7dSO_PlOj3DocURw",
+                "responsive": false
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "9fOKM1LtToShjV1zIFQY0Q",
+            "updated_at": "2025-09-15T02:26:04.000Z"
+        },
+        {
+            "acc_config": null,
+            "bt_config": null,
+            "category": "UNSPECIFIED",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-09-10T04:33:38.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": null,
+            "name": "RPP_DL_A584F1",
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "vyCKwTnmSS_IRLgOov85Gw",
+            "updated_at": "2025-09-25T05:37:34.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "GzGAbudhSN_Hj0YROruJvw",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:41.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "-A7nXCqoQdyw2lhhnLFA8w"
+            ],
+            "mac_address": "E4956EA43BFE",
+            "name": "Refrig_6",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": false,
+                "mac_address": "e4956ea43bfe",
+                "node_id": 93,
+                "parent_sublocation_uid": "4_kF-L7dSO_PlOj3DocURw",
+                "responsive": false
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "zuJGk_s9RDu409kOhJNfDQ",
+            "updated_at": "2025-09-15T02:26:03.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "CSBFl7N9SWGotH2Pi21Teg",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:48.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "oTlbGhpLRYKF0sxCn1VS1w"
+            ],
+            "mac_address": "E4956EA443FE",
+            "name": "Electrician_5",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": true,
+                "mac_address": "e4956ea443fe",
+                "node_id": 123,
+                "parent_sublocation_uid": "4_kF-L7dSO_PlOj3DocURw",
+                "responsive": true
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "show": false,
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "2YV04aC9QXGAU4lWau-nVA",
+            "updated_at": "2025-09-15T02:20:58.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "COHkuDnxQ-acHX4QyqpDTg",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:40.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "MVdzOB-EQO6lLJvxSAiSPA"
+            ],
+            "mac_address": "E4956EA438F6",
+            "name": "Cleaning_1",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": true,
+                "mac_address": "e4956ea438f6",
+                "node_id": 117,
+                "parent_sublocation_uid": "4_kF-L7dSO_PlOj3DocURw",
+                "responsive": true
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "show": false,
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "5y78Y69nRKKJHlH_q6jtxQ",
+            "updated_at": "2025-09-15T02:23:43.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "vREu_RkLR7eaWk41bgMurQ",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:39.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "sOYzwiE0R0CRPyLMi6s0GQ"
+            ],
+            "mac_address": "E4956EA436AB",
+            "name": "Mechanical_2",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": true,
+                "mac_address": "e4956ea436ab",
+                "node_id": 17,
+                "parent_sublocation_uid": "a5oicOTMSZqwG4Ja8xVeFQ",
+                "responsive": true
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "show": false,
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "BTvT_KSaTI2BFv48EqQciA",
+            "updated_at": "2025-09-15T02:21:19.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "PcY3kIY1TF2QvNcNi19w5w",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:40.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "MVdzOB-EQO6lLJvxSAiSPA"
+            ],
+            "mac_address": "E4956EA44282",
+            "name": "Cleaning_5",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": false,
+                "mac_address": "e4956ea44282",
+                "node_id": 53,
+                "parent_sublocation_uid": "4_kF-L7dSO_PlOj3DocURw",
+                "responsive": false
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "jGGDbj6FROycVPqk-KvKIA",
+            "updated_at": "2025-09-15T02:23:43.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "LGorfQsjTXumZXc44fH4rg",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-13T15:54:29.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "5NpDo-NzSP6hzmCKPMTgtQ"
+            ],
+            "mac_address": "E4956EA43AD0",
+            "name": "EMS_2",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": true,
+                "mac_address": "e4956ea43ad0",
+                "node_id": 125,
+                "parent_sublocation_uid": "4_kF-L7dSO_PlOj3DocURw",
+                "responsive": true
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "show": false,
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "EnPs6voTRbGuy-RgBhnbsQ",
+            "updated_at": "2025-09-15T02:24:20.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "q2hbjg5zT0iMROUMbJnT9w",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:39.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "gndOSis4Smm6zjwFun1W6w"
+            ],
+            "mac_address": "E4956EA4369F",
+            "name": "Steel_5",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": true,
+                "mac_address": "e4956ea4369f",
+                "node_id": 111,
+                "parent_sublocation_uid": "4_kF-L7dSO_PlOj3DocURw",
+                "responsive": true
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "show": false,
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "Z861OuCxS_iQXuRdMO0hpw",
+            "updated_at": "2025-09-15T02:26:04.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "PKJc0eBrQIGqPqvJZ9Pcjw",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:48.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "oTlbGhpLRYKF0sxCn1VS1w"
+            ],
+            "mac_address": "E4956EA4440D",
+            "name": "Electrician_4",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": true,
+                "mac_address": "e4956ea4440d",
+                "node_id": 45,
+                "parent_sublocation_uid": "4_kF-L7dSO_PlOj3DocURw",
+                "responsive": true
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "show": false,
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "vxDd6oyQTL_nGbVR3ATw-Q",
+            "updated_at": "2025-09-15T02:20:52.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "rrOF79XLT-mnW_xG5vY7HA",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:48.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "oTlbGhpLRYKF0sxCn1VS1w"
+            ],
+            "mac_address": "E4956EA435B5",
+            "name": "Electrician_1",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": true,
+                "mac_address": "e4956ea435b5",
+                "node_id": 37,
+                "parent_sublocation_uid": "a5oicOTMSZqwG4Ja8xVeFQ",
+                "responsive": true
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "show": false,
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "1Ip83YZdT8uObjdvlN1pWQ",
+            "updated_at": "2025-09-15T02:20:20.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "maOda5MjSHqHWQWV3gsgqg",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:39.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "gndOSis4Smm6zjwFun1W6w"
+            ],
+            "mac_address": "E4956EA44063",
+            "name": "Steel_4",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": true,
+                "mac_address": "e4956ea44063",
+                "node_id": 103,
+                "parent_sublocation_uid": "4_kF-L7dSO_PlOj3DocURw",
+                "responsive": true
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "show": false,
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "MwhSyfewTJSC9Dtm_jdP0g",
+            "updated_at": "2025-09-15T02:26:04.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "jv9_Jo50S2ybsa806wWefw",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:48.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "oTlbGhpLRYKF0sxCn1VS1w"
+            ],
+            "mac_address": "E4956EA438FE",
+            "name": "Electrician_2",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": true,
+                "mac_address": "e4956ea438fe",
+                "node_id": 126,
+                "parent_sublocation_uid": "a5oicOTMSZqwG4Ja8xVeFQ",
+                "responsive": true
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "show": false,
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "uwpg4tDeRQevNCBitRa39Q",
+            "updated_at": "2025-09-15T02:20:35.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "s9Hvf2ZAQH_K6iV-bK5xGA",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:43.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "Bl4NhA82R2qrCB9Zkodoxw"
+            ],
+            "mac_address": "E4956EA43C8B",
+            "name": "Roofing_6",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": false,
+                "mac_address": "e4956ea43c8b",
+                "node_id": 82,
+                "parent_sublocation_uid": "4_kF-L7dSO_PlOj3DocURw",
+                "responsive": false
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "Tdot1uqTSnudAXF4VBcM8w",
+            "updated_at": "2025-09-15T02:26:04.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "8YjGBVzMQ62xggkbYL1-oQ",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:39.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "sOYzwiE0R0CRPyLMi6s0GQ"
+            ],
+            "mac_address": "E4956EA44533",
+            "name": "Mechanical_3",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": true,
+                "mac_address": "e4956ea44533",
+                "node_id": 72,
+                "parent_sublocation_uid": "4_kF-L7dSO_PlOj3DocURw",
+                "responsive": true
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "show": false,
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "fU7aMpE3TaqZxQCJCFXRrA",
+            "updated_at": "2025-09-15T02:21:25.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "BH_Kpe89Rk2fVFWf0AbG9A",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:38.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "6moxSYnGTb2_pfJqKsV_cA"
+            ],
+            "mac_address": "E4956EA4379D",
+            "name": "Painter_4",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": true,
+                "mac_address": "e4956ea4379d",
+                "node_id": 54,
+                "parent_sublocation_uid": "4_kF-L7dSO_PlOj3DocURw",
+                "responsive": true
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "show": false,
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "zNSFBbhNRwmIZzFEjIZJzA",
+            "updated_at": "2025-09-15T02:25:10.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "IjhfPo63SfqjF655gVUa1Q",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-13T15:54:29.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "gndOSis4Smm6zjwFun1W6w"
+            ],
+            "mac_address": "E4956EA479E5",
+            "name": "Steel_6",
+            "node": {
+                "cbid": "BEC8",
+                "fault": null,
+                "idle": false,
+                "mac_address": "e4956ea479e5",
+                "node_id": 49,
+                "parent_sublocation_uid": "a5oicOTMSZqwG4Ja8xVeFQ",
+                "responsive": false
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "jCQO_rkKSqWfV98SuvCeaQ",
+            "updated_at": "2025-09-15T02:26:04.000Z"
+        },
+        {
+            "acc_config": null,
+            "bt_config": null,
+            "category": "UNSPECIFIED",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-09-10T04:34:27.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": null,
+            "name": "RPP_DL_MD2",
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "egh-6W4hQoaAyWnaEJuD5Q",
+            "updated_at": "2025-09-14T20:09:00.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "awvCD3wuRLS9SanJ87Om0g",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:38.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "6moxSYnGTb2_pfJqKsV_cA"
+            ],
+            "mac_address": "E4956EA43F48",
+            "name": "Painter_5",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": true,
+                "mac_address": "e4956ea43f48",
+                "node_id": 83,
+                "parent_sublocation_uid": "4_kF-L7dSO_PlOj3DocURw",
+                "responsive": true
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "show": false,
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "yRKk9E4KQ_6kJF2xfycIaQ",
+            "updated_at": "2025-09-15T02:25:10.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "cJDcLOwFSwyRv30430KEYg",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:46.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "lqcUlEg6Srm_0PHM89-xbg"
+            ],
+            "mac_address": "E4956EA43A76",
+            "name": "Blgd Signage_6",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": false,
+                "mac_address": "e4956ea43a76",
+                "node_id": 128,
+                "parent_sublocation_uid": "4_kF-L7dSO_PlOj3DocURw",
+                "responsive": false
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "iikxGLYpSc6SbvtJzEkIfg",
+            "updated_at": "2025-09-15T02:23:18.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "A3_rq8xHQE6VxpZ8bqHYaw",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:41.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "-A7nXCqoQdyw2lhhnLFA8w"
+            ],
+            "mac_address": "E4956EA43D22",
+            "name": "Refrig_3",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": true,
+                "mac_address": "e4956ea43d22",
+                "node_id": 75,
+                "parent_sublocation_uid": "4_kF-L7dSO_PlOj3DocURw",
+                "responsive": true
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "show": false,
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "F9J9pJ2_RWaAnX-kQHMQZw",
+            "updated_at": "2025-09-15T02:26:03.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "Ox7FsWdPTza_b6g0XVzsPg",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:37.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "7bbtWWy-SMWRHlZkaobzWg"
+            ],
+            "mac_address": "E4956EA432E3",
+            "name": "Carpentry_2_retired",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": false,
+                "mac_address": "e4956ea432e3",
+                "node_id": 79,
+                "parent_sublocation_uid": "a5oicOTMSZqwG4Ja8xVeFQ",
+                "responsive": false
+            },
+            "paired": null,
+            "position_update_interval": 1,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "60-fLsewT7GnxI21p7KOHw",
+            "updated_at": "2025-09-14T19:23:43.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "oioBhHVeRhC447kr-JTdbA",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:46.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "lqcUlEg6Srm_0PHM89-xbg"
+            ],
+            "mac_address": "E4956EA447B0",
+            "name": "Blgd Signage_3",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": false,
+                "mac_address": "e4956ea447b0",
+                "node_id": 78,
+                "parent_sublocation_uid": "4_kF-L7dSO_PlOj3DocURw",
+                "responsive": false
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "OC3HBtuoTNmIC_1gxgSmDQ",
+            "updated_at": "2025-09-15T02:23:18.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "38RNTk6MRw6WA8iD9eDkZQ",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:47.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "5NpDo-NzSP6hzmCKPMTgtQ"
+            ],
+            "mac_address": "E4956EA443C6",
+            "name": "EMS_2_missing",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": false,
+                "mac_address": "e4956ea443c6",
+                "node_id": 73,
+                "parent_sublocation_uid": "a5oicOTMSZqwG4Ja8xVeFQ",
+                "responsive": false
+            },
+            "paired": null,
+            "position_update_interval": 1,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "cwUa0MnHQZWTs-u24d70dQ",
+            "updated_at": "2025-09-14T19:25:36.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "alGnRNqcTkeYKk3XIK1kKQ",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:46.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "k4eAvhvWQ-i3IoYMHeGrhA"
+            ],
+            "mac_address": "E4956EA43832",
+            "name": "Fire_Spk_5",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": true,
+                "mac_address": "e4956ea43832",
+                "node_id": 120,
+                "parent_sublocation_uid": "4_kF-L7dSO_PlOj3DocURw",
+                "responsive": true
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "show": false,
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "I338T9ZDQZ_YMyY0mXgw3w",
+            "updated_at": "2025-09-15T02:24:36.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "z9CCGiHNTyyH-XtavsG3FA",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:45.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "sS6l9O_TQuOTBFYg5nD2Og"
+            ],
+            "mac_address": "E4956EA43B24",
+            "name": "Concrete_4",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": true,
+                "mac_address": "e4956ea43b24",
+                "node_id": 124,
+                "parent_sublocation_uid": "4_kF-L7dSO_PlOj3DocURw",
+                "responsive": true
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "show": false,
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "HKkBnX_iT-aF9z8OWcLDKA",
+            "updated_at": "2025-09-15T02:24:01.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "qKOKL0THQ0aHqycCkIfOHg",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:46.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "lqcUlEg6Srm_0PHM89-xbg"
+            ],
+            "mac_address": "E4956EA43F08",
+            "name": "Blgd Signage_4",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": false,
+                "mac_address": "e4956ea43f08",
+                "node_id": 116,
+                "parent_sublocation_uid": "4_kF-L7dSO_PlOj3DocURw",
+                "responsive": false
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "ZmdLSUHeR5ChoPWgfgD-_Q",
+            "updated_at": "2025-09-15T02:23:18.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "suWQHiAbQpGYjqaqWXnlMw",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:43.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "Bl4NhA82R2qrCB9Zkodoxw"
+            ],
+            "mac_address": "E4956EA44598",
+            "name": "Roofing_5",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": false,
+                "mac_address": "e4956ea44598",
+                "node_id": 122,
+                "parent_sublocation_uid": "4_kF-L7dSO_PlOj3DocURw",
+                "responsive": false
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "bxB_tnIcSTmhK8YSkSkBMA",
+            "updated_at": "2025-09-15T02:26:04.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "GLrsSJhISxGZbtKBqkUeYA",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:44.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "z46y01CWQKqiZjFMjSC8Jg"
+            ],
+            "mac_address": "E4956EA43429",
+            "name": "Flooring_6",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": true,
+                "mac_address": "e4956ea43429",
+                "node_id": 36,
+                "parent_sublocation_uid": "4_kF-L7dSO_PlOj3DocURw",
+                "responsive": true
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "show": false,
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "UkK2nV3UTMqGA1uduZgJhA",
+            "updated_at": "2025-09-15T02:24:52.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "3R7WtqsSQmGYcm-tApgiLg",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:42.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "yVGIzvePR6KvitZkgmVUuQ"
+            ],
+            "mac_address": "E4956EA438AB",
+            "name": "Striping_4",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": false,
+                "mac_address": "e4956ea438ab",
+                "node_id": 127,
+                "parent_sublocation_uid": "4_kF-L7dSO_PlOj3DocURw",
+                "responsive": false
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "4W5WoAEuS-WBKIhVcx-2lA",
+            "updated_at": "2025-09-15T02:26:04.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "U5yfByrqRfmNvM_gjBPj6Q",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:42.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "yVGIzvePR6KvitZkgmVUuQ"
+            ],
+            "mac_address": "E4956EA445FD",
+            "name": "Striping_3",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": false,
+                "mac_address": "e4956ea445fd",
+                "node_id": 38,
+                "parent_sublocation_uid": "4_kF-L7dSO_PlOj3DocURw",
+                "responsive": false
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "0vXTZLPkQpiXA65j1Pfq3w",
+            "updated_at": "2025-09-15T02:26:04.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "zLxEYkB_R-ixsz3a5jAy6g",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:38.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "6moxSYnGTb2_pfJqKsV_cA"
+            ],
+            "mac_address": "E4956EA43A3E",
+            "name": "Painter_2",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": true,
+                "mac_address": "e4956ea43a3e",
+                "node_id": 18,
+                "parent_sublocation_uid": "a5oicOTMSZqwG4Ja8xVeFQ",
+                "responsive": true
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "show": false,
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "W0NQgGvQQ2G-49BTRTMOlw",
+            "updated_at": "2025-09-15T02:25:10.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "QFlC9LVHQOKlHJ5477NRHA",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:43.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "Bl4NhA82R2qrCB9Zkodoxw"
+            ],
+            "mac_address": "E4956EA43A35",
+            "name": "Roofing_2",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": false,
+                "mac_address": "e4956ea43a35",
+                "node_id": 74,
+                "parent_sublocation_uid": "4_kF-L7dSO_PlOj3DocURw",
+                "responsive": false
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "Yfu9eiw8R9ejfjZc7_rFZQ",
+            "updated_at": "2025-09-15T02:26:03.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "PEuS4gFZSJmLTwSCJK-Kng",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-13T15:54:29.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "z46y01CWQKqiZjFMjSC8Jg"
+            ],
+            "mac_address": "E4956EA487B2",
+            "name": "Flooring_7",
+            "node": {
+                "cbid": "BEC8",
+                "fault": null,
+                "idle": false,
+                "mac_address": "e4956ea487b2",
+                "node_id": 48,
+                "parent_sublocation_uid": "4_kF-L7dSO_PlOj3DocURw",
+                "responsive": false
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "C5O2ZvlaS6S5nJbKRiEkmA",
+            "updated_at": "2025-09-15T02:24:52.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "scSbyzZxSUm9NxA7mFGALw",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:41.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "-A7nXCqoQdyw2lhhnLFA8w"
+            ],
+            "mac_address": "E4956EA440B5",
+            "name": "Refrig_4",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": true,
+                "mac_address": "e4956ea440b5",
+                "node_id": 67,
+                "parent_sublocation_uid": "4_kF-L7dSO_PlOj3DocURw",
+                "responsive": true
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "show": false,
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "5xGof1TfR6ejrkDzQBGX1A",
+            "updated_at": "2025-09-15T02:26:03.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "Z_XgMoPHRuS_DG619DdEAg",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:41.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "-A7nXCqoQdyw2lhhnLFA8w"
+            ],
+            "mac_address": "E4956EA43273",
+            "name": "Refrig_2",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": true,
+                "mac_address": "e4956ea43273",
+                "node_id": 94,
+                "parent_sublocation_uid": "4_kF-L7dSO_PlOj3DocURw",
+                "responsive": true
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "show": false,
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "LJGHXxS3TDmKSumG1VZAqw",
+            "updated_at": "2025-09-15T02:26:03.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "kOUMBV2-TIaP7VHAN9NFYA",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:39.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "sOYzwiE0R0CRPyLMi6s0GQ"
+            ],
+            "mac_address": "E4956EA446BD",
+            "name": "Mechanical_1",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": true,
+                "mac_address": "e4956ea446bd",
+                "node_id": 101,
+                "parent_sublocation_uid": "a5oicOTMSZqwG4Ja8xVeFQ",
+                "responsive": true
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "show": false,
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "tPwd9bXeTY_J3qyWC3GagQ",
+            "updated_at": "2025-09-15T02:21:13.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "hXoe7md-T2ewKfvxzhtlKQ",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:40.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "sOYzwiE0R0CRPyLMi6s0GQ"
+            ],
+            "mac_address": "E4956EA4456F",
+            "name": "Mechanical_4",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": true,
+                "mac_address": "e4956ea4456f",
+                "node_id": 84,
+                "parent_sublocation_uid": "4_kF-L7dSO_PlOj3DocURw",
+                "responsive": true
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "show": false,
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "CO_3FFSRSe66mmsP83pzOw",
+            "updated_at": "2025-09-15T02:21:31.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "4I8XN_ZZROKZOwRd4aa1vw",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:44.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "z46y01CWQKqiZjFMjSC8Jg"
+            ],
+            "mac_address": "E4956EA43A0C",
+            "name": "Flooring_5",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": true,
+                "mac_address": "e4956ea43a0c",
+                "node_id": 69,
+                "parent_sublocation_uid": "4_kF-L7dSO_PlOj3DocURw",
+                "responsive": true
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "show": false,
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "YxrKf3pVSlGsOWfCzpz4SQ",
+            "updated_at": "2025-09-15T02:24:52.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "tfJznzoyRq_Nyw3-xscrqw",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:42.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "-A7nXCqoQdyw2lhhnLFA8w"
+            ],
+            "mac_address": "E4956EA44276",
+            "name": "Refrig_8",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": false,
+                "mac_address": "e4956ea44276",
+                "node_id": 105,
+                "parent_sublocation_uid": "4_kF-L7dSO_PlOj3DocURw",
+                "responsive": false
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "0SLhEH2NSvqWYvTeq_3IVQ",
+            "updated_at": "2025-09-15T02:26:03.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "QuJwK57bQj_V7cqxJur7_Q",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:42.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "yVGIzvePR6KvitZkgmVUuQ"
+            ],
+            "mac_address": "E4956EA43537",
+            "name": "Striping_5",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": false,
+                "mac_address": "e4956ea43537",
+                "node_id": 104,
+                "parent_sublocation_uid": "4_kF-L7dSO_PlOj3DocURw",
+                "responsive": false
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "keQhrml7SKafldPibFP53Q",
+            "updated_at": "2025-09-15T02:26:04.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "6Bnag97CTlOevW2sssbuFw",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:43.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "Bl4NhA82R2qrCB9Zkodoxw"
+            ],
+            "mac_address": "E4956EA43615",
+            "name": "Roofing_4",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": false,
+                "mac_address": "e4956ea43615",
+                "node_id": 102,
+                "parent_sublocation_uid": "4_kF-L7dSO_PlOj3DocURw",
+                "responsive": false
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "Nkl8AU2KQUSIuvs07XQyXQ",
+            "updated_at": "2025-09-15T02:26:04.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "6aKls66XQoyrBnd9R-iOgw",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:48.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "C95cZ_P7T1_ZMxMPjLoizw"
+            ],
+            "mac_address": "E4956EA44678",
+            "name": "Plumbing_4",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": true,
+                "mac_address": "e4956ea44678",
+                "node_id": 56,
+                "parent_sublocation_uid": "4_kF-L7dSO_PlOj3DocURw",
+                "responsive": true
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "show": false,
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "rK5XxKEWRMGPBXS7hrmZRA",
+            "updated_at": "2025-09-15T02:25:26.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "uDlufmFzQ_ivRRJdQq1QWA",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:42.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "yVGIzvePR6KvitZkgmVUuQ"
+            ],
+            "mac_address": "E4956EA444E5",
+            "name": "Striping_1",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": false,
+                "mac_address": "e4956ea444e5",
+                "node_id": 90,
+                "parent_sublocation_uid": "4_kF-L7dSO_PlOj3DocURw",
+                "responsive": false
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "os-P6AGLQOGq5i_tomuBdA",
+            "updated_at": "2025-09-15T02:26:04.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "tCcGhtWcQL_A2HoCmSYWzw",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:37.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "7bbtWWy-SMWRHlZkaobzWg"
+            ],
+            "mac_address": "E4956EA434EE",
+            "name": "Carpentry_7",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": false,
+                "mac_address": "e4956ea434ee",
+                "node_id": 115,
+                "parent_sublocation_uid": "4_kF-L7dSO_PlOj3DocURw",
+                "responsive": false
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "d4EoO8O3TIS4AX4W5sylBA",
+            "updated_at": "2025-09-15T02:22:38.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "0TWAm1puQyaONXqEmbVi3Q",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:41.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "MVdzOB-EQO6lLJvxSAiSPA"
+            ],
+            "mac_address": "E4956EA43E7A",
+            "name": "Cleaning_7",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": false,
+                "mac_address": "e4956ea43e7a",
+                "node_id": 131,
+                "parent_sublocation_uid": "4_kF-L7dSO_PlOj3DocURw",
+                "responsive": false
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "MQ1xt0IpTySmSJJ0kEVX_g",
+            "updated_at": "2025-09-15T02:23:43.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "eJW0QBYARZCtJqdlwtUwKA",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:37.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "7bbtWWy-SMWRHlZkaobzWg"
+            ],
+            "mac_address": "E4956EA44320",
+            "name": "Carpentry_6",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": false,
+                "mac_address": "e4956ea44320",
+                "node_id": 27,
+                "parent_sublocation_uid": "4_kF-L7dSO_PlOj3DocURw",
+                "responsive": false
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "k2LCoVQoRx226g2U0B0o4A",
+            "updated_at": "2025-09-15T02:22:32.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "NlEqjaGRR3a55WCbMiSHoA",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:40.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "MVdzOB-EQO6lLJvxSAiSPA"
+            ],
+            "mac_address": "E4956EA4419E",
+            "name": "Cleaning_4",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": true,
+                "mac_address": "e4956ea4419e",
+                "node_id": 130,
+                "parent_sublocation_uid": "4_kF-L7dSO_PlOj3DocURw",
+                "responsive": true
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "show": false,
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "fiQpYVs_RYOv_HO45Hv7pw",
+            "updated_at": "2025-09-15T02:23:43.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "JziWfCyrSvSlWwmHF2rfSQ",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:40.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "MVdzOB-EQO6lLJvxSAiSPA"
+            ],
+            "mac_address": "E4956EA438DE",
+            "name": "Cleaning_6",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": false,
+                "mac_address": "e4956ea438de",
+                "node_id": 77,
+                "parent_sublocation_uid": "4_kF-L7dSO_PlOj3DocURw",
+                "responsive": false
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "apc-sKlZTVe5q2pNa0u8Xg",
+            "updated_at": "2025-09-15T02:23:43.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "qq5Lf6LGTvW323iUgPaSWQ",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:44.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "Bl4NhA82R2qrCB9Zkodoxw"
+            ],
+            "mac_address": "E4956EA432CD",
+            "name": "Roofing_7",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": false,
+                "mac_address": "e4956ea432cd",
+                "node_id": 28,
+                "parent_sublocation_uid": "4_kF-L7dSO_PlOj3DocURw",
+                "responsive": false
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "Y-lsdFwvTSOqiNcIn0-G1w",
+            "updated_at": "2025-09-15T02:26:04.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "1LCvok1eQySs4TkYjkyguQ",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:43.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "Bl4NhA82R2qrCB9Zkodoxw"
+            ],
+            "mac_address": "E4956EA44053",
+            "name": "Roofing_3",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": false,
+                "mac_address": "e4956ea44053",
+                "node_id": 71,
+                "parent_sublocation_uid": "4_kF-L7dSO_PlOj3DocURw",
+                "responsive": false
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "shTooYftQ4i90MdUCypxqg",
+            "updated_at": "2025-09-15T02:26:04.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "PaYzllT0RbWKy7JJtChWcw",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:40.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "MVdzOB-EQO6lLJvxSAiSPA"
+            ],
+            "mac_address": "E4956EA44708",
+            "name": "Cleaning_3",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": true,
+                "mac_address": "e4956ea44708",
+                "node_id": 58,
+                "parent_sublocation_uid": "4_kF-L7dSO_PlOj3DocURw",
+                "responsive": true
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "show": false,
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "2jcjqdYkQN_-eEgRGMSS_w",
+            "updated_at": "2025-09-15T02:23:43.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "f8PSyYcQRoyzCAkSc7CnNg",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:47.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "C95cZ_P7T1_ZMxMPjLoizw"
+            ],
+            "mac_address": "E4956EA436CA",
+            "name": "Plumbing_3",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": true,
+                "mac_address": "e4956ea436ca",
+                "node_id": 99,
+                "parent_sublocation_uid": "4_kF-L7dSO_PlOj3DocURw",
+                "responsive": true
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "show": false,
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "-SD7dY2eQomOhjBs6ahOSw",
+            "updated_at": "2025-09-15T02:25:26.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "I4wQ6gEoQqyFoSKcGn7yQQ",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:37.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "7bbtWWy-SMWRHlZkaobzWg"
+            ],
+            "mac_address": "E4956EA4437E",
+            "name": "Carpentry_5",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": true,
+                "mac_address": "e4956ea4437e",
+                "node_id": 133,
+                "parent_sublocation_uid": "4_kF-L7dSO_PlOj3DocURw",
+                "responsive": true
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "show": false,
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "RAcK6lflTru7Hy5fx3e90Q",
+            "updated_at": "2025-09-15T02:22:21.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "0fgUHJRXTFCG5imItsv-8w",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:45.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "sS6l9O_TQuOTBFYg5nD2Og"
+            ],
+            "mac_address": "E4956EA43881",
+            "name": "Concrete_2_missing",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": false,
+                "mac_address": "e4956ea43881",
+                "node_id": 62,
+                "parent_sublocation_uid": "a5oicOTMSZqwG4Ja8xVeFQ",
+                "responsive": false
+            },
+            "paired": null,
+            "position_update_interval": 1,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "EtBwhHl6QXaXuoP6AFha3A",
+            "updated_at": "2025-09-14T19:24:56.000Z"
+        },
+        {
+            "acc_config": null,
+            "assoc_uid": "X1NJ2yTtQMy78gJihF3kgQ",
+            "bt_config": null,
+            "category": "PERSON",
+            "company_uid": "TJz8WharTRuEJWA7cAxx4g",
+            "created_at": "2025-08-28T21:47:46.000Z",
+            "custom_info": "",
+            "default_height": 1000,
+            "display_name": null,
+            "groups": [
+                "k4eAvhvWQ-i3IoYMHeGrhA"
+            ],
+            "mac_address": "E4956EA43E42",
+            "name": "Fire_Spk_3",
+            "node": {
+                "cbid": "3E0D",
+                "fault": null,
+                "idle": true,
+                "mac_address": "e4956ea43e42",
+                "node_id": 15,
+                "parent_sublocation_uid": "4_kF-L7dSO_PlOj3DocURw",
+                "responsive": true
+            },
+            "paired": null,
+            "position_update_interval": 0.5,
+            "project_uid": "EzU4y8EaQJuD4Y9ZartpqA",
+            "removed_at": "9999-12-31T23:59:59.000Z",
+            "self_zone_uid": null,
+            "sensor_config": {
+                "sensors": [
+                ]
+            },
+            "show": false,
+            "t2t_no_alarm_uid": [
+            ],
+            "tag_config": {
+                "stationary": false,
+                "t2t_no_alarm": [
+                ]
+            },
+            "type": "NAV",
+            "uid": "3sYE4-ucQEa4fNiBIwLe4A",
+            "updated_at": "2025-09-15T02:24:36.000Z"
+        }
+    ]
+}

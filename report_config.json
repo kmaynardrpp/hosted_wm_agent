@@ -1,0 +1,29 @@
+{
+  "prefer_floorplan": true,
+  "floorplan_margin": 0.10,
+  "overlay_point_size": 8,
+  "overlay_alpha": 0.85,
+  "overlay_color_by": "trade",
+  "overlay_subsample": 20000,
+  "draw_trails": false,
+  "trail_seconds": 900,
+
+  "draw_zones": true,
+  "zone_face_alpha": 0.20,
+  "zone_edge_alpha": 0.65,
+
+  "top_n": 10,
+  "pie_max_trades": 8,
+  "pie_max_single_share": 0.90,
+  "line_min_points": 2,
+
+  "small_multiples_cols": 2,
+
+  "max_figures": 12,
+
+  "figsize_overlay": [9, 7],
+  "figsize_bar": [7, 5],
+  "figsize_line": [7, 5],
+  "figsize_pie": [5, 5],
+  "figsize_box": [7, 5]
+}

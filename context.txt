@@ -1,0 +1,140 @@
+Redpoint Positioning — Walmart Renovation RTLS (x, y, z) Analytics Context
+===========================================================================
+
+Purpose
+-------
+This document orients AI/analytics agents to analyze **position-based (x, y, z)** RTLS data for Walmart store renovations. It defines entities, files, coordinate systems, expected visuals, derived tables, and example prompts—so results are consistent, defensible, and useful to Walmart and GCs.
+
+Local Pathing (no sandbox)
+--------------------------
+- **All paths are local.** Resolve the project root as `ROOT` (via `INFOZONE_ROOT` or the script’s parent/parent).  
+- **Never** reference `/mnt/data` or `sandbox:`.  
+- Write outputs (PDF/PNGs) to the **directory of the first CSV** (`out_dir`).  
+- Read text using `encoding="utf-8", errors="ignore"` (Windows-safe).
+
+Core Files (inputs & reference)
+-------------------------------
+- **CSV (positions)** — columns (case-insensitive):  
+  `trackable, trackable_uid, mac, ts (timestamp), x, y, z`  
+  - `ts`: timestamp (UTC).  
+  - `x, y, z`: world coordinates **in millimeters**.
+- **trackable_objects.json** — `{ "trackable_objects": [ { "mac_address", "name", "uid", ... }, ... ] }`  
+  Used by the extractor to map **MAC → final `trackable` and `trackable_uid`**.  
+  After MAC mapping, **derive `trade` from the final trackable name** (e.g., `Electrician_2` → `electrician`).
+- **floorplans.json** — world-mm extent for the floorplan raster (`ROOT / floorplan.(png|jpg|jpeg)`)  
+  - Fields: `height, width` (pixels), `image_scale` (meters/pixel), `image_offset_x, image_offset_y` (pixel center).  
+  - Convert pixels → mm: `scale_mm_per_pixel = image_scale * 100`.  
+  - World rectangle:  
+    `x_min = (x_c - width/2)  * scale`  
+    `x_max = (x_c + width/2)  * scale`  
+    `y_min = (y_c - height/2) * scale`  
+    `y_max = (y_c + height/2) * scale`  
+  - Draw the floorplan with corners `(x_min, y_max)` → `(x_max, y_min)` (Y flipped), so **Y increases upward** in plots.
+- **zones.json** *(optional; only if zones are requested)* — polygon list in world-mm with `name`, `uid`, `active`, `zone_geometry.positions[]` (x, y).
+
+Entities & Definitions
+----------------------
+- **Trackable**: display name (after MAC mapping) for a tag/device; examples: `Electrician_2`, `Plumber_1`.  
+- **Trackable UID**: persistent ID for the same asset; if missing in CSV, use the MAC map when available.  
+- **Trade**: canonical lowercase from the **final** `trackable` (e.g., `electrician`, `plumbing`).  
+- **Position sample**: `(ts, x, y, z, trackable_uid, trackable, trade)`.  
+- **Presence (zones mode)**: contiguous time a tag resides inside a polygonal zone.  
+- **Trajectory segment**: ordered samples for a trackable over a window.  
+- **Occupancy (grid or zone)**: count of active tags at a place/time.
+
+Coordinate System
+-----------------
+- All positions and polygons are in **millimeters (mm)**.  
+- Floorplan raster is placed in world-mm using `floorplans.json`.  
+- Display origin is the lower-left of the world rectangle (Y-up after flipping raster).
+
+Recommended Visual Outputs (x,y,z-first)
+----------------------------------------
+**Priority (most sessions):**
+1) **Floorplan overlay (scatter)**  
+   - Place `ROOT / floorplan.(png|jpg|jpeg)` using the world rectangle from `floorplans.json`.  
+   - Scatter `(x,y)` with low alpha; color by `trade` or `trackable`.  
+   - Optional **trails** (e.g., last 10–15 min) for flow.  
+   - Optional **zone polygons** (translucent) only if the user asks about zones.
+
+2) **Density/heat overlay** *(optional, on request)*  
+   - 2D density (KDE or binned) over the same world-mm axes.
+
+**Supporting visuals (when helpful):**
+- **Bar**: top trades by dwell or (if zones requested) top zones by dwell/occupancy.  
+- **Line**: hourly sample counts or person-minutes (UTC or local).  
+- **Pie**: trade share if categories ≤ 8 (else bar).  
+- **Box/Violin**: dwell by trade (or speed if derived).  
+- **Small-multiples bars**: per-trade top zones / per-zone top trades (if zones requested).  
+- **Scatter relationship**: only if explicitly requested (e.g., speed vs. dwell).
+
+“Use zones” Rule
+----------------
+- **Default**: do **not** compute zone metrics.  
+- **If asked**: use `zones_process.py` to build **intervals** and summarize dwell/occupancy.  
+  - Intervals = per-tag contiguous time in a polygon.  
+  - Summaries: total dwell per zone, occupancy timeline, co-presence (if requested).
+
+Derived Tables (x,y,z-first; zones optional)
+--------------------------------------------
+**Always available (position-centric):**
+- **samples**  
+  `(ts_utc, x_mm, y_mm, z_mm, trackable_uid, trackable, trade)`  
+  + `ts_iso` (ISO UTC), `ts_short` (“MM-DD\nHH:MM”).
+
+- **hourly_xy_counts** *(optional)*  
+  `(hour_utc, count_samples)` or `(hour_utc, trade, count_samples)`.
+
+- **path_summary** *(optional)*  
+  `(trackable_uid, start_ts_utc, end_ts_utc, duration_sec, n_samples, bounds_xmin, xmax, ymin, ymax)`.
+
+**When zones are requested (via `zones_process.py`):**
+- **zone_intervals**  
+  `(trackable_uid, trackable, zone_name, enter_ts, leave_ts, duration_sec)`
+
+- **zone_totals**  
+  `(zone_name, total_dwell_sec, unique_tags)`
+
+- **zone_occupancy_timeline**  
+  `(ts_utc, zone_name, count)`
+
+Plot Selection Policy
+---------------------
+- **No quotas.** If one overlay answers the question, return one figure. If multiple bars are best, return those.  
+- **Intent detection** from user wording:  
+  - “map, floorplan, where, layout, x y, position” → floorplan overlay (scatter; optional zones/trails)  
+  - “who, trade mix/share, staffing” → pie (≤8) or bar trade distribution  
+  - “peak, busiest, when, schedule” → hourly line + supporting bars  
+  - “zones, room, area” → zone overlays + zone dwell/occupancy tables as requested  
+  - “duration, dwell, distribution” → histogram or box/violin by trade  
+- **Scatter (relationship)** only if explicitly requested.  
+- **Small-multiples**: allowed (counts as one figure section).
+
+Data Quality & Safeguards
+-------------------------
+- **Time parsing**: keep raw UTC; convert to local only for display if asked.  
+- **Noise**: drop/smooth rapid oscillations; optional 1–5s resample before zone entry/exit detection.  
+- **Short intervals**: merge tiny gaps; drop very short presences (< N s) unless asked not to.  
+- **MAC→name**: normalize MAC (remove colons/dashes, lowercase) before lookup.  
+- **Trade inference**: only after final `trackable` is assigned from the MAC map.  
+- **Schema validation**: after first CSV, ensure required columns exist; error out with the **detected column list** if not (see guidelines).
+
+Reference Config & Budgets
+--------------------------
+- **report_config.json** (tunable defaults), e.g.:  
+  `prefer_floorplan=true`, `draw_zones=true`, `overlay_subsample=20000`, `max_figures=6`.  
+- **report_limits.py** (budgets shaping):  
+  `MAX_FIGURES≈6`, `MAX_TABLE_ROWS_TOTAL≈180`, `MAX_TEXT_LINES_TOTAL≈900`, `MAX_PAGES≈12`.
+
+Privacy & Compliance
+--------------------
+- No PII; report only aggregates or anonymous tags.  
+- Suppress cells with very small counts if needed.
+
+Quick Summary for Agents
+------------------------
+- You analyze **x,y,z** RTLS positions; world units = **mm**.  
+- Prefer **floorplan overlay** for “where/map” questions; add zones only when asked.  
+- Be **intent-driven** and **quota-free**: pick the smallest, most relevant set of figures.  
+- Keep rendering stable and fast: budgets + atomic PDF write (helper handles it).  
+- Always use **local paths** (ROOT, out_dir); **never** `/mnt/data` or `sandbox:`; always print **local file:/// links** on success.
