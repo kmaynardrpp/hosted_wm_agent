@@ -1,0 +1,29 @@
+version: "3.9"
+
+services:
+  api:
+    build: .
+    environment:
+      INFOZONE_ROOT: /app
+      # OPENAI_API_KEY: ${OPENAI_API_KEY:?set in .env}     # if you need it; create a .env next to this file
+    volumes:
+      - ./uploads:/app/uploads
+      - ./.runs:/app/.runs
+    restart: unless-stopped
+
+  caddy:
+    image: caddy:2
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - api
+    restart: unless-stopped
+
+volumes:
+  caddy_data:
+  caddy_config:
