@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# main.py — Responses-API generator/runner with validation + container-safe paths
+# main.py — InfoZone generator/runner (container-safe, EC2-ready)
 from __future__ import annotations
 
 import argparse
@@ -11,25 +11,21 @@ import subprocess
 from pathlib import Path
 from typing import List, Tuple
 
-# ---- OpenAI SDK ----
+# ---------- OpenAI SDK ----------
 try:
     from openai import OpenAI
 except Exception:
     print("ERROR: OpenAI SDK import failed. Install: pip install --upgrade openai", file=sys.stderr)
     raise
 
-# ---------- Config ----------
-ENV_MODEL = os.environ.get("OPENAI_MODEL", "").strip()
+# ---------- Tunables / Defaults ----------
 FALLBACK_MODELS = ["gpt-4o-mini", "gpt-4o", "gpt-4.1-mini", "gpt-4.1"]
-TIMEOUT_SEC = int(os.environ.get("RTLS_CODE_TIMEOUT_SEC", "1800"))
-RUNS_DIR = ".runs"
-REASONING_EFFORT = os.environ.get("OPENAI_REASONING_EFFORT", "medium").lower()
+ENV_MODEL = os.environ.get("OPENAI_MODEL", "").strip()
+REASONING_EFFORT = os.environ.get("OPENAI_REASONING_EFFORT", "medium").lower()  # low | medium | high
+TIMEOUT_SEC = int(os.environ.get("RTLS_CODE_TIMEOUT_SEC", "1800"))              # child script timeout
+RUNS_DIR = ".runs"                                                               # where generator writes scripts
 
-def model_supports_reasoning(model: str) -> bool:
-    m = (model or "").lower()
-    return any(tag in m for tag in ("gpt-5", "o4", "o3", "reasoning", "thinking"))
-
-# ---------- Helpers ----------
+# ---------- Small helpers ----------
 def now_ts() -> str:
     return time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
 
@@ -45,12 +41,6 @@ def read_text(p: Path, max_chars: int | None = None) -> str:
         return txt if max_chars is None else txt[:max_chars]
     except Exception:
         return ""
-
-def first_existing(paths: List[Path]) -> Path | None:
-    for p in paths:
-        if p.exists():
-            return p
-    return None
 
 def extract_code_block(text: str) -> str:
     """Extract the first ```python ...``` block; else first ```...```; else full text."""
@@ -74,66 +64,138 @@ def strip_fences(code: str) -> str:
     return re.sub(r'^\s*```(?:python)?\s*|\s*```\s*$', '', code, flags=re.IGNORECASE | re.DOTALL).strip()
 
 def code_is_skeletal(code: str) -> Tuple[bool, List[str]]:
+    """Lightweight validation to nudge repairs before execution."""
     issues: List[str] = []
     if len(code) < 1500:
         issues.append(f"too short ({len(code)} chars)")
     low = code.lower()
-    if "from extractor import extract_tracks" not in code:
-        issues.append("missing 'from extractor import extract_tracks'")
-    if "from pdf_creation_script import safe_build_pdf" not in code:
-        issues.append("missing 'from pdf_creation_script import safe_build_pdf'")
+    if "from extractor import extract_tracks" not in low:
+        issues.append("missing extractor import")
+    if "from pdf_creation_script import safe_build_pdf" not in low:
+        issues.append("missing pdf builder import")
     if "/mnt/data" in low or "sandbox:" in low:
-        issues.append("contains forbidden path tokens (/mnt/data or sandbox:)")
-    if "infozone_root" not in low and "path(__file__)" not in low:
-        issues.append("missing project-root resolution / sys.path bootstrap")
+        issues.append("forbidden path token (/mnt/data or sandbox:)")
+    if "infozone_out_dir" not in low and "out_env" not in low:
+        issues.append("missing OUT_DIR (INFOZONE_OUT_DIR) logic")
     return (len(issues) > 0), issues
+
+def model_supports_reasoning(model: str) -> bool:
+    m = (model or "").lower()
+    return any(tag in m for tag in ("gpt-5", "o4", "o3", "reasoning", "thinking"))
 
 # ---------- Prompt builders ----------
 def build_system_message(project_dir: Path) -> str:
     sys_prompt = read_text(project_dir / "system_prompt.txt").strip()
     if not sys_prompt:
         sys_prompt = "You are a code generator that returns one Python script as a single code block."
+    # Hard, explicit output constraint layer
     sys_prompt += (
-        "\n\nMANDATE: You must return ONE Python script in a single code block and nothing else. "
-        "The script must obey guidelines.txt and the Output contract exactly. "
-        "OUTPUT FORMAT (MANDATORY): Emit ONLY raw Python source — no prose, no Markdown fences."
+        "\n\nOUTPUT FORMAT (MANDATORY): Emit ONLY raw Python source — no prose, no Markdown fences."
+        " Begin directly with imports; if you would include fences, OMIT them."
     )
     return sys_prompt
 
 def build_user_message(user_prompt: str, csv_paths: List[str], project_dir: Path, trimmed: bool=False) -> str:
+    # include full guidelines and a trimmed context; helper excerpts to ground APIs
     guidelines = read_text(project_dir / "guidelines.txt", max_chars=None)
     context = read_text(project_dir / "context.txt", max_chars=(4000 if trimmed else 8000))
 
-    helper_files = [
-        ("chart_policy.py",        4000 if trimmed else 8000),
-        ("extractor.py",           4000 if trimmed else 8000),
-        ("pdf_creation_script.py", 4000 if trimmed else 8000),
-        ("zones_process.py",       4000 if trimmed else 8000),
-        ("report_limits.py",       2000 if trimmed else 4000),
-        ("report_config.json",     2000 if trimmed else 4000),
-        ("floorplans.json",        2000 if trimmed else 4000),
-        ("zones.json",             2000 if trimmed else 4000),
+    helper_caps = 8000 if not trimmed else 4000
+    helpers = [
+        ("extractor.py",           helper_caps),
+        ("pdf_creation_script.py", helper_caps),
+        ("chart_policy.py",        helper_caps),
+        ("zones_process.py",       helper_caps),
+        ("report_limits.py",       4000 if not trimmed else 2000),
+        ("report_config.json",     4000 if not trimmed else 2000),
+        ("floorplans.json",        4000 if not trimmed else 2000),
+        ("zones.json",             4000 if not trimmed else 2000),
     ]
-    helper_snips = []
-    for fname, cap in helper_files:
-        snip = read_text(project_dir / fname, max_chars=cap)
-        if snip:
-            helper_snips += [f"\n>>> {fname}\n", snip]
+    helper_snips: List[str] = []
+    for fname, cap in helpers:
+        txt = read_text(project_dir / fname, max_chars=cap)
+        if txt:
+            helper_snips += [f"\n>>> {fname}\n", txt]
 
-    floorplan = first_existing([
-        project_dir / "floorplan.jpeg",
-        project_dir / "floorplan.jpg",
-        project_dir / "floorplan.png"
+    floorplan = None
+    for n in ("floorplan.jpeg", "floorplan.jpg", "floorplan.png"):
+        p = project_dir / n
+        if p.exists():
+            floorplan = p
+            break
+    assets_lines = "\n".join([
+        f" - {('floorplan.(jpeg|jpg|png)')} : {'present' if floorplan else 'missing'}",
+        f" - redpoint_logo.png : {'present' if (project_dir/'redpoint_logo.png').exists() else 'missing'}",
+        f" - trackable_objects.json : {'present' if (project_dir/'trackable_objects.json').exists() else 'missing'}",
     ])
-    logo = project_dir / "redpoint_logo.png"
-    assets = [
-        ("example.csv", (project_dir / "example.csv").exists()),
-        ((floorplan.name if floorplan else "floorplan.(jpeg|jpg|png)"), bool(floorplan)),
-        ("redpoint_logo.png", logo.exists()),
-    ]
 
     csv_lines = "\n".join(f" - {p}" for p in csv_paths)
-    assets_lines = "\n".join(f" - {n}: {'present' if ok else 'missing'}" for n, ok in assets)
+
+    # Big instruction block: keep aligned with your system/guidelines (emergency crop, tables off, etc.)
+    INSTR = (
+        "INSTRUCTIONS (MANDATORY — FOLLOW EXACTLY)\n"
+        "-----------------------------------------\n"
+        "You are InfoZoneBuilder. Generate ONE self-contained Python script that analyzes RTLS position data and writes\n"
+        "one branded PDF plus PNGs. Use local helpers; never network or /mnt/data. Return ONE code block only (no fences).\n"
+        "\n"
+        "PATHS (container-safe):\n"
+        "  import sys, os; from pathlib import Path\n"
+        "  ROOT = Path(os.environ.get('INFOZONE_ROOT', '')).resolve() if os.environ.get('INFOZONE_ROOT') else Path(__file__).resolve().parent\n"
+        "  if not (ROOT / 'guidelines.txt').exists(): ROOT = ROOT.parent\n"
+        "  if str(ROOT) not in sys.path: sys.path.insert(0, str(ROOT))\n"
+        "  OUT_ENV = os.environ.get('INFOZONE_OUT_DIR', '').strip()\n"
+        "  out_dir = Path(OUT_ENV).resolve() if OUT_ENV else Path(csv_paths[0]).resolve().parent\n"
+        "  out_dir.mkdir(parents=True, exist_ok=True)\n"
+        "  LOGO = ROOT / 'redpoint_logo.png'\n"
+        "\n"
+        "MATPLOTLIB ≥3.9 SHIM:\n"
+        "  import matplotlib; matplotlib.use('Agg')\n"
+        "  from matplotlib.backends.backend_agg import FigureCanvasAgg as _FCA; import numpy as _np\n"
+        "  _FCA.tostring_rgb = getattr(_FCA,'tostring_rgb', lambda self: _np.asarray(self.buffer_rgba())[..., :3].tobytes())\n"
+        "  import matplotlib as _mpl; _get_cmap = getattr(getattr(_mpl,'colormaps',_mpl),'get_cmap',None)\n"
+        "\n"
+        "INGEST:\n"
+        "  from extractor import extract_tracks\n"
+        "  raw = extract_tracks(csv_path, mac_map_path=str(ROOT / 'trackable_objects.json'))\n"
+        "  import pandas as pd\n"
+        "  df = pd.DataFrame(raw.get('rows', []))\n"
+        "  if df.columns.duplicated().any(): df = df.loc[:, ~df.columns.duplicated()]\n"
+        "  # Emergency floor crop (GLOBAL): keep x>=12000 & y>=15000 in world mm\n"
+        "  xn = pd.to_numeric(df.get('x',''), errors='coerce'); yn = pd.to_numeric(df.get('y',''), errors='coerce')\n"
+        "  df = df.loc[(xn >= 12000) & (yn >= 15000)].copy()\n"
+        "  # Timestamp canon\n"
+        "  src = df['ts_iso'] if 'ts_iso' in df.columns else (df['ts'] if 'ts' in df.columns else '')\n"
+        "  df['ts_utc'] = pd.to_datetime(src, utc=True, errors='coerce')\n"
+        "  # Required columns check (after first file)\n"
+        "  cols = set(df.columns.astype(str))\n"
+        "  if not ((('trackable' in cols) or ('trackable_uid' in cols)) and ('trade' in cols) and ('x' in cols) and ('y' in cols)):\n"
+        "      print('Error Report:'); print('Missing required columns for analysis.')\n"
+        "      print('Columns detected: ' + ','.join(df.columns.astype(str))); raise SystemExit(1)\n"
+        "\n"
+        "TABLE POLICY: Default is NO table sections. Only add a table if the user explicitly asks for table/rows/tabular/CSV.\n"
+        "TIME: Use dt.floor('h'), never 'H'. Use ts_utc for ALL analytics/zones.\n"
+        "\n"
+        "FIGURES → PNGs → PDF:\n"
+        "  # Save PNGs first (dpi=120), but DO NOT close figures before PDF\n"
+        "  pdf_path = out_dir / f'info_zone_report_{report_date}.pdf'\n"
+        "  from pdf_creation_script import safe_build_pdf\n"
+        "  try:\n"
+        "      safe_build_pdf(report, str(pdf_path), logo_path=str(LOGO))\n"
+        "  except Exception as e:\n"
+        "      import traceback; print('Error Report:'); print(f'PDF build failed: {e.__class__.__name__}: {e}'); traceback.print_exc(limit=2)\n"
+        "      from report_limits import make_lite\n"
+        "      try:\n"
+        "          report = make_lite(report); safe_build_pdf(report, str(pdf_path), logo_path=str(LOGO))\n"
+        "      except Exception as e2:\n"
+        "          print('Error Report:'); print(f'Lite PDF failed: {e2.__class__.__name__}: {e2}'); traceback.print_exc(limit=2); raise SystemExit(1)\n"
+        "\n"
+        "PRINT LINKS (success only):\n"
+        "  def file_uri(p): return 'file:///' + str(p.resolve()).replace('\\\\','/')\n"
+        "  print(f\"[Download the PDF]({file_uri(pdf_path)})\")\n"
+        "  for i, pth in enumerate(png_paths, 1): print(f\"[Download Plot {i}]({file_uri(pth)})\")\n"
+        "\n"
+        "MINIMAL/LITE MODE: If empty after filters, still emit a concise summary (no tables unless explicitly requested) and build PDF.\n"
+    )
 
     parts: List[str] = []
     parts += [
@@ -145,8 +207,8 @@ def build_user_message(user_prompt: str, csv_paths: List[str], project_dir: Path
         "---------------------------",
         csv_lines,
         "",
-        "LOCAL ASSETS (binary/CSV — DO NOT UPLOAD; read from disk at runtime)",
-        "---------------------------------------------------------------------",
+        "LOCAL ASSETS (present/missing — read from disk)",
+        "-----------------------------------------------",
         assets_lines,
         "",
         "MANDATORY RULES (guidelines.txt — full text)",
@@ -161,80 +223,6 @@ def build_user_message(user_prompt: str, csv_paths: List[str], project_dir: Path
         "-----------------------------------------------------------------",
     ]
     parts += helper_snips
-
-    # --- Deliverables & hard rules (container-safe, with OUT_DIR support) ---
-    INSTR = (
-    "INSTRUCTIONS (MANDATORY — FOLLOW EXACTLY)\n"
-    "-----------------------------------------\n"
-    "You are **InfoZoneBuilder**. Generate ONE self-contained Python script that analyzes RTLS position data and writes\n"
-    "one branded PDF plus PNGs for any charts. Return ONE code block and nothing else. Use local helper modules.\n"
-    "\n"
-    "PRINT LINKS ON SUCCESS ONLY (exact format):\n"
-    "  print(f\"[Download the PDF](file:///{pdf_path.resolve().as_posix()})\")\n"
-    "  print(f\"[Download Plot {i}](file:///{png_path.resolve().as_posix()})\")\n"
-    "On failure, print only:\n"
-    "  print(\"Error Report:\"); print(\"<short reason>\")\n"
-    "  If schema-related, also: print(\"Columns detected: \" + \",\".join(df.columns.astype(str)))\n"
-    "\n"
-    "PATHS (container-safe):\n"
-    "  # Resolve project root and enable local imports\n"
-    "  import sys, os; from pathlib import Path\n"
-    "  ROOT = Path(os.environ.get(\"INFOZONE_ROOT\", \"\")).resolve() if os.environ.get(\"INFOZONE_ROOT\") else Path(__file__).resolve().parent\n"
-    "  if not (ROOT / \"guidelines.txt\").exists(): ROOT = ROOT.parent\n"
-    "  if str(ROOT) not in sys.path: sys.path.insert(0, str(ROOT))\n"
-    "  # OUT_DIR priority: INFOZONE_OUT_DIR (if set) else directory of first CSV\n"
-    "  OUT_ENV = os.environ.get(\"INFOZONE_OUT_DIR\", \"\").strip()\n"
-    "  out_dir = Path(OUT_ENV).resolve() if OUT_ENV else Path(csv_paths[0]).resolve().parent\n"
-    "  out_dir.mkdir(parents=True, exist_ok=True)\n"
-    "  # Asset paths\n"
-    "  LOGO = ROOT / \"redpoint_logo.png\"\n"
-    "\n"
-    "MATPLOTLIB ≥3.9 SHIM (before any PDF rendering):\n"
-    "  import matplotlib; matplotlib.use(\"Agg\")\n"
-    "  from matplotlib.backends.backend_agg import FigureCanvasAgg as _FCA; import numpy as _np\n"
-    "  _FCA.tostring_rgb = getattr(_FCA, \"tostring_rgb\", lambda self: _np.asarray(self.buffer_rgba())[..., :3].tobytes())\n"
-    "  cmap_get = getattr(getattr(matplotlib, \"colormaps\", matplotlib), \"get_cmap\", None)\n"
-    "\n"
-    "INGEST (per-file, memory-safe):\n"
-    "  from extractor import extract_tracks\n"
-    "  raw = extract_tracks(csv_path)\n"
-    "  import pandas as pd\n"
-    "  df = pd.DataFrame(raw.get(\"rows\", []))\n"
-    "  if df.columns.duplicated().any(): df = df.loc[:, ~df.columns.duplicated()]\n"
-    "  src = df[\"ts_iso\"] if \"ts_iso\" in df.columns else (df[\"ts\"] if \"ts\" in df.columns else pd.Series([], dtype=str))\n"
-    "  df[\"ts_utc\"] = pd.to_datetime(src, utc=True, errors=\"coerce\")\n"
-    "  # Required columns after first file: (trackable OR trackable_uid), trade, x, y\n"
-    "  cols = set(df.columns.astype(str));\n"
-    "  if not ((\"trackable\" in cols) or (\"trackable_uid\" in cols)) or (\"trade\" not in cols) or (\"x\" not in cols) or (\"y\" not in cols):\n"
-    "      print(\"Error Report:\"); print(\"Missing required columns for analysis.\")\n"
-    "      print(\"Columns detected: \" + \",\".join(df.columns.astype(str))); raise SystemExit(1)\n"
-    "\n"
-    "CHARTS → PNGs → PDF (order):\n"
-    "  png = out_dir / f\"info_zone_report_{report_date}_plot{i:02d}.png\"\n"
-    "  fig.savefig(str(png), dpi=120)  # do NOT close yet\n"
-    "  sections.append({\"type\":\"charts\",\"title\":\"Figures\",\"figures\":figs})  # pass live Figures\n"
-    "  pdf_path = out_dir / f\"info_zone_report_{report_date}.pdf\"\n"
-    "  from pdf_creation_script import safe_build_pdf\n"
-    "  try:\n"
-    "      safe_build_pdf(report, str(pdf_path), logo_path=str(LOGO))\n"
-    "  except Exception as e:\n"
-    "      import traceback; print(\"Error Report:\"); print(f\"PDF build failed: {e.__class__.__name__}: {e}\"); traceback.print_exc(limit=2)\n"
-    "      from report_limits import make_lite\n"
-    "      try:\n"
-    "          report = make_lite(report); safe_build_pdf(report, str(pdf_path), logo_path=str(LOGO))\n"
-    "      except Exception as e2:\n"
-    "          print(\"Error Report:\"); print(f\"Lite PDF failed: {e2.__class__.__name__}: {e2}\"); traceback.print_exc(limit=2); raise SystemExit(1)\n"
-    "\n"
-    "TIME:\n"
-    "  Use dt.floor(\"h\") (lowercase h) — never \"H\".\n"
-    "\n"
-    "LEGEND/QUALITY:\n"
-    "  Only call legend() when there are labeled artists; cap categories at ≤ 12.\n"
-    "\n"
-    "ONE BLOCK RULE:\n"
-    "  Emit ONLY raw Python (no Markdown fences / prose). Start with imports.\n"
-    )
-
     parts += ["", INSTR]
     return "\n".join(parts)
 
@@ -245,9 +233,10 @@ Return ONE Python script in a single code block and nothing else.
 
 Requirements:
 - CLI: python generated.py "<USER_PROMPT>" /abs/csv1 [/abs/csv2 ...]
-- Resolve ROOT from INFOZONE_ROOT or __file__; OUT_DIR = INFOZONE_OUT_DIR or first CSV dir.
+- Resolve ROOT from INFOZONE_ROOT or __file__; OUT_DIR = INFOZONE_OUT_DIR or first CSV dir (mkdir -p).
 - Import local helpers; save PDF/PNGs to OUT_DIR; print file:/// links exactly.
-- Per-file processing (memory-safe); no /mnt/data; use dt.floor("h").
+- Per-file processing (memory-safe); emergency floor crop: keep x>=12000 & y>=15000; use dt.floor("h").
+- Default: Summary + Charts; tables only if explicitly requested.
 
 CSV INPUTS:
 {csv_lines}
@@ -270,7 +259,7 @@ def responses_create_text(client: OpenAI, model: str, system_msg: str, user_msg:
 
     raw = getattr(resp, "output_text", "") or ""
     if not raw:
-        parts = []
+        parts: List[str] = []
         for out in getattr(resp, "output", []) or []:
             for c in getattr(out, "content", []) or []:
                 if getattr(c, "type", None) in ("output_text", "text"):
@@ -336,6 +325,9 @@ def generate_and_run(user_prompt: str, csv_paths: List[str], project_dir: Path) 
     model_list: List[str] = []
     if ENV_MODEL:
         model_list.append(ENV_MODEL)
+    # Prefer gpt-5 if not set explicitly
+    if "gpt-5" not in model_list:
+        model_list.insert(0, "gpt-5")
     model_list += [m for m in FALLBACK_MODELS if m not in model_list]
     print(f"[{now_ts()}] [INFO] Model preference order: {model_list}")
 
@@ -343,7 +335,7 @@ def generate_and_run(user_prompt: str, csv_paths: List[str], project_dir: Path) 
     print(f"[{now_ts()}] [INFO] Using model: {model_used}")
     print(f"[{now_ts()}] [INFO] Final code length: {len(code_text)} chars")
 
-    # Compile preflight (stop fence bugs & obvious syntax)
+    # Compile preflight to catch fence/typo bugs early
     try:
         compile(code_text, "<generated>", "exec")
     except SyntaxError as e:
@@ -356,7 +348,7 @@ def generate_and_run(user_prompt: str, csv_paths: List[str], project_dir: Path) 
     script_path.write_text(code_text, encoding="utf-8")
     print(f"[{now_ts()}] [INFO] Wrote generated script to {script_path}")
 
-    # Execute with project root on PYTHONPATH and INFOZONE_ROOT; pass through INFOZONE_OUT_DIR if set
+    # Execute with project root on PYTHONPATH and INFOZONE_ROOT; pass through INFOZONE_OUT_DIR if set by server.py
     cmd = [sys.executable, str(script_path), user_prompt] + csv_paths
     print(f"[{now_ts()}] [INFO] Executing generated code:\n$ {' '.join(cmd)}\n(CWD) {project_dir}\n", flush=True)
 
@@ -385,7 +377,7 @@ def main():
     args = ap.parse_args()
 
     project_dir = Path(__file__).resolve().parent
-    # Always pass absolute, strict CSV paths
+    # Force absolute CSV paths (fail fast if missing not enforced here to allow server-side existence checks)
     csv_paths   = [str(Path(p).resolve()) for p in args.csv]
 
     rc = generate_and_run(args.prompt, csv_paths, project_dir)
