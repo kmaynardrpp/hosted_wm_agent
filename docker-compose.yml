@@ -4,8 +4,12 @@ services:
   api:
     build: .
     environment:
-      INFOZONE_ROOT: /app
-      # OPENAI_API_KEY: ${OPENAI_API_KEY:?set in .env}     # if you need it; create a .env next to this file
+      INFOZONE_ROOT: /app                  # internal root used by your code
+      OPENAI_API_KEY: ${OPENAI_API_KEY}    # from .env (do NOT commit .env)
+      OPENAI_MODEL: ${OPENAI_MODEL:-gpt-5}
+      OPENAI_REASONING_EFFORT: ${OPENAI_REASONING_EFFORT:-medium}
+      RTLS_CODE_TIMEOUT_SEC: ${RTLS_CODE_TIMEOUT_SEC:-1800}
+      TZ: ${TZ:-UTC}
     volumes:
       - ./uploads:/app/uploads
       - ./.runs:/app/.runs
