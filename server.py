@@ -1,4 +1,4 @@
-# server.py — FastAPI bridge for InfoZone
+# server.py — FastAPI bridge for InfoZone (container/EC2 ready)
 import os
 import re
 import sys
@@ -9,7 +9,7 @@ from typing import List, Dict, Any, Optional
 
 from fastapi import FastAPI, UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse, PlainTextResponse, Response
+from fastapi.responses import JSONResponse, PlainTextResponse, Response, FileResponse
 from fastapi.staticfiles import StaticFiles
 
 # ---------- Project root ----------
@@ -17,10 +17,12 @@ PROJECT_ROOT = Path(os.environ.get("INFOZONE_ROOT") or Path(__file__).resolve().
 os.environ["INFOZONE_ROOT"] = str(PROJECT_ROOT)
 MAIN_PY = PROJECT_ROOT / "main.py"
 UPLOAD_DIR = PROJECT_ROOT / "uploads"
+RUNS_DIR = PROJECT_ROOT / ".runs"
 UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
+RUNS_DIR.mkdir(parents=True, exist_ok=True)
 
 # ---------- App ----------
-app = FastAPI(title="InfoZone Web Bridge", version="0.3.1")
+app = FastAPI(title="InfoZone Web Bridge", version="0.4.0")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],     # tighten later if needed
@@ -28,8 +30,23 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 # Serve project root so PDFs/PNGs are reachable at /files/...
 app.mount("/files", StaticFiles(directory=str(PROJECT_ROOT)), name="files")
+
+# Serve the built SPA if present (web/infozone-web/dist)
+FRONTEND_DIR = PROJECT_ROOT / "web" / "infozone-web" / "dist"
+if FRONTEND_DIR.exists():
+    app.mount("/assets", StaticFiles(directory=str(FRONTEND_DIR / "assets")), name="assets")
+
+    @app.get("/", response_model=None)
+    def _root() -> Response:
+        return FileResponse(FRONTEND_DIR / "index.html")
+
+    @app.get("/{full_path:path}", response_model=None)
+    def _spa(full_path: str) -> Response:
+        idx = FRONTEND_DIR / "index.html"
+        return FileResponse(idx if idx.exists() else FRONTEND_DIR / "404.html")
 
 # Matches: [Download the PDF](file:///C:/path/to/report.pdf)
 FILELINK_RE = re.compile(r"\[[^\]]+\]\(file:///([^)\r\n]+)\)")
@@ -77,11 +94,13 @@ def run(prompt: str = Form(...), files: List[UploadFile] = File(default=[])) -> 
     # Build the command: python main.py "<prompt>" <csv1>...
     cmd = [sys.executable, str(MAIN_PY), prompt] + [str(p) for p in csv_paths]
 
-    # Ensure helpers import from ROOT
+    # Ensure helpers import from ROOT + set per-job OUT dir in .runs
     env = os.environ.copy()
     env["PYTHONPATH"] = str(PROJECT_ROOT) + (os.pathsep + env["PYTHONPATH"] if env.get("PYTHONPATH") else "")
+    job_out = RUNS_DIR / job_dir.name
+    job_out.mkdir(parents=True, exist_ok=True)
+    env["INFOZONE_OUT_DIR"] = str(job_out)
 
-    # Run the generator
     proc = subprocess.run(
         cmd,
         cwd=str(PROJECT_ROOT),
@@ -134,4 +153,4 @@ def run(prompt: str = Form(...), files: List[UploadFile] = File(default=[])) -> 
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("server:app", host="127.0.0.1", port=8000, reload=True)
+    uvicorn.run("server:app", host="0.0.0.0", port=8000, reload=True)
