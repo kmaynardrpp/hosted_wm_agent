@@ -305,6 +305,42 @@ AUTO-SELECT DATED CSVs FROM DB (HYphen FORMAT; ASSUME 2025 IF YEAR OMITTED)
 
 - Range detection MUST use correct named groups: re.search(r'(?P<a>.+?)\s+(?:to|through|thru|\-|–|—|\.\.|between)\s+(?P<b>.+)', t)
 
+# --- SANITY (compact) ---
+# alias to avoid NameError typos
+try: FLOJSON = FLOORJSON
+except NameError: pass
+
+import os, re as _re, tempfile, sys
+from pathlib import Path as _P
+
+# required MAC map
+_mac = ROOT / "trackable_objects.json"
+if not _mac.exists():
+    print("Error Report:"); print(f"Missing MAC map: {_mac}"); raise SystemExit(1)
+
+# out_dir writable
+try:
+    out_dir.mkdir(parents=True, exist_ok=True)
+    with tempfile.NamedTemporaryFile(dir=str(out_dir), delete=True) as _t: _t.write(b".")
+except Exception as e:
+    print("Error Report:"); print(f"Output dir not writable: {out_dir} ({e})"); raise SystemExit(1)
+
+# DB dir present if auto-selecting
+_db = ROOT / "db"
+if (len(sys.argv) < 3 or any(_P(p).is_dir() for p in sys.argv[2:])) and not _db.exists():
+    print("Error Report:"); print(f"DB directory not found: {_db}"); raise SystemExit(1)
+
+# quick regex preflight (range + filename matchers)
+_ = _re.compile(r'(?P<a>.+?)\s+(?:to|through|thru|\-|–|—|\.\.|between)\s+(?P<b>.+)')
+_ = _re.compile(r'(?:positions|postions)_(\d{4})-(\d{1,2})-(\d{1,2})\.csv$', _re.I)
+_ = _re.compile(r'(?:positions|postions)_(\d{1,2})-(\d{1,2})\.csv$', _re.I)
+
+# brief notices (non-fatal)
+if not (ROOT / "redpoint_logo.png").exists():  print("NOTICE: logo missing; PDF will have no logo.")
+if not (ROOT / "floorplans.json").exists():    print("NOTICE: floorplans.json missing; overlay will skip image.")
+if not (ROOT / "zones.json").exists():         print("NOTICE: zones.json missing; zones will be skipped unless present in data.")
+
+
 
 MINIMAL / LITE MODE
 - If no data or heavy failure: produce a concise "summary" section only (no tables unless explicitly requested) and build the PDF with `make_lite(report)`.
