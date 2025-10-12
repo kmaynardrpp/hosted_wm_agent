@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# main.py — InfoZone generator/runner (container-safe, EC2-ready)
+# main.py — InfoZone generator/runner (Docker/EC2-ready; GV/GC shared)
 from __future__ import annotations
 
 import argparse
@@ -74,7 +74,7 @@ def code_is_skeletal(code: str) -> Tuple[bool, List[str]]:
     if "from pdf_creation_script import safe_build_pdf" not in low:
         issues.append("missing pdf builder import")
     if "/mnt/data" in low or "sandbox:" in low:
-        issues.append("forbidden path token (/mnt/data or sandbox:)")
+        issues.append("forbidden path token (/mnt_data or sandbox:)")
     if "infozone_out_dir" not in low and "out_env" not in low:
         issues.append("missing OUT_DIR (INFOZONE_OUT_DIR) logic")
     return (len(issues) > 0), issues
@@ -124,14 +124,14 @@ def build_user_message(user_prompt: str, csv_paths: List[str], project_dir: Path
             floorplan = p
             break
     assets_lines = "\n".join([
-        f" - {('floorplan.(jpeg|jpg|png)')} : {'present' if floorplan else 'missing'}",
+        f" - floorplan.(jpeg|jpg|png) : {'present' if floorplan else 'missing'}",
         f" - redpoint_logo.png : {'present' if (project_dir/'redpoint_logo.png').exists() else 'missing'}",
         f" - trackable_objects.json : {'present' if (project_dir/'trackable_objects.json').exists() else 'missing'}",
     ])
 
     csv_lines = "\n".join(f" - {p}" for p in csv_paths)
 
-    # Big instruction block: keep aligned with your system/guidelines (emergency crop, tables off, etc.)
+    # Big instruction block: keep aligned with your system/guidelines
     INSTR = (
         "INSTRUCTIONS (MANDATORY — FOLLOW EXACTLY)\n"
         "-----------------------------------------\n"
@@ -144,7 +144,7 @@ def build_user_message(user_prompt: str, csv_paths: List[str], project_dir: Path
         "  if not (ROOT / 'guidelines.txt').exists(): ROOT = ROOT.parent\n"
         "  if str(ROOT) not in sys.path: sys.path.insert(0, str(ROOT))\n"
         "  OUT_ENV = os.environ.get('INFOZONE_OUT_DIR', '').strip()\n"
-        "  out_dir = Path(OUT_ENV).resolve() if OUT_ENV else Path(csv_paths[0]).resolve().parent\n"
+        "  out_dir = Path(OUT_ENV).resolve() if OUT_ENV else (Path(csv_paths[0]).resolve().parent if csv_paths else ROOT)\n"
         "  out_dir.mkdir(parents=True, exist_ok=True)\n"
         "  LOGO = ROOT / 'redpoint_logo.png'\n"
         "\n"
@@ -154,9 +154,79 @@ def build_user_message(user_prompt: str, csv_paths: List[str], project_dir: Path
         "  _FCA.tostring_rgb = getattr(_FCA,'tostring_rgb', lambda self: _np.asarray(self.buffer_rgba())[..., :3].tobytes())\n"
         "  import matplotlib as _mpl; _get_cmap = getattr(getattr(_mpl,'colormaps',_mpl),'get_cmap',None)\n"
         "\n"
+        "## --- DB auto-select from ROOT/db (HYphen format; tolerant 1–2 digit month/day) ---\n"
+        "from pathlib import Path as _P\n"
+        "import re as _re, datetime as _dt\n"
+        "DB_DIR = ROOT / 'db'\n"
+        "_MONTHS = {m.lower(): i for i,m in enumerate(['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],1)}\n"
+        "_MONTHS.update({m.lower(): i for i,m in enumerate(['January','February','March','April','May','June','July','August','September','October','November','December'],1)})\n"
+        "def _parse_dates_from_text(txt: str):\n"
+        "    t = txt.lower()\n"
+        "    ymd = [tuple(map(int, m.groups())) for m in _re.finditer(r'(\\d{4})[-/](\\d{1,2})[-/](\\d{1,2})', t)]\n"
+        "    md  = [tuple(map(int, m.groups())) for m in _re.finditer(r'\\b(\\d{1,2})[-/](\\d{1,2})\\b', t)]\n"
+        "    for m in _re.finditer(r'\\b([a-z]{3,9})\\s+(\\d{1,2})(?:st|nd|rd|th)?\\b', t):\n"
+        "        mon = _MONTHS.get(m.group(1).lower()); \n"
+        "        if mon: md.append((mon, int(m.group(2))))\n"
+        "    rng = _re.search(r'(?P<a>.+?)\\s+(?:to|through|thru|\\-|–|—|\\.\\.|between)\\s+(?P<b>.+)', t)\n"
+        "    return {'ymd': ymd, 'md': md, 'range': rng is not None}\n"
+        "def _days_between(m1,d1,m2,d2,year=None):\n"
+        "    y = year or 1900\n"
+        "    a = _dt.date(y,m1,d1); b = _dt.date(y,m2,d2)\n"
+        "    if b < a: a,b = b,a\n"
+        "    out=[]; cur=a\n"
+        "    for _ in range(370):\n"
+        "        out.append((cur.month, cur.day, (year if year else None)))\n"
+        "        if cur==b: break\n"
+        "        cur += _dt.timedelta(days=1)\n"
+        "    return out\n"
+        "R_YYYY = _re.compile(r'(?:positions|postions)_(\\d{4})-(\\d{1,2})-(\\d{1,2})\\.csv$', _re.I)\n"
+        "R_MD   = _re.compile(r'(?:positions|postions)_(\\d{1,2})-(\\d{1,2})\\.csv$', _re.I)\n"
+        "def _index_db():\n"
+        "    files = list(DB_DIR.glob('*.csv'))\n"
+        "    ymd = {}; md = {}\n"
+        "    for f in files:\n"
+        "        n = f.name.lower()\n"
+        "        m = R_YYYY.match(n)\n"
+        "        if m:\n"
+        "            yyyy,mm,dd = map(int, m.groups()); ymd[(yyyy,mm,dd)] = f; md.setdefault((mm,dd), []).append((yyyy,f)); continue\n"
+        "        m = R_MD.match(n)\n"
+        "        if m:\n"
+        "            mm,dd = map(int, m.groups()); md.setdefault((mm,dd), []).append((None,f))\n"
+        "    for k in md: md[k].sort(key=lambda t: (t[0] is None, t[0]), reverse=True)\n"
+        "    return ymd, md\n"
+        "# Only auto-select when user provided no files OR any provided path is a directory\n"
+        "_user_args = sys.argv[2:]\n"
+        "_dirs = [p for p in _user_args if _P(p).is_dir()]\n"
+        "if (not _user_args) or _dirs:\n"
+        "    _dates = _parse_dates_from_text(user_prompt)\n"
+        "    _by_ymd, _by_md = _index_db()\n"
+        "    _want = []\n"
+        "    if _dates['ymd']:\n"
+        "        for yyyy,mm,dd in _dates['ymd']: _want.append((yyyy,mm,dd))\n"
+        "    elif _dates['md']:\n"
+        "        if _dates['range'] and len(_dates['md']) >= 2:\n"
+        "            (m1,d1),(m2,d2) = _dates['md'][0], _dates['md'][1]; _want += _days_between(m1,d1,m2,d2,year=None)\n"
+        "        else:\n"
+        "            for mm,dd in _dates['md']: _want.append((None,mm,dd))\n"
+        "    _chosen = []\n"
+        "    for y,mm,dd in _want:\n"
+        "        if y is not None and (y,mm,dd) in _by_ymd: _chosen.append(_by_ymd[(y,mm,dd)])\n"
+        "        elif (mm,dd) in _by_md: _chosen.append(_by_md[(mm,dd)][0][1])\n"
+        "    _chosen = [str(_P(p).resolve()) for p in _chosen if p]\n"
+        "    _chosen = list(dict.fromkeys(_chosen))\n"
+        "    if not _chosen:\n"
+        "        print('Error Report:'); print('No matching CSVs found in db for requested date(s).'); raise SystemExit(1)\n"
+        "    _extra = [str(_P(p).resolve()) for p in _user_args if _P(p).is_file()]\n"
+        "    csv_paths = _chosen + _extra\n"
+        "    print('SELECTED FROM DB:', ', '.join(_P(p).name for p in csv_paths[:20]))\n"
+        "\n"
         "INGEST:\n"
         "  from extractor import extract_tracks\n"
         "  raw = extract_tracks(csv_path, mac_map_path=str(ROOT / 'trackable_objects.json'))\n"
+        "  audit = raw.get('audit', {}) or {}\n"
+        "  if not audit.get('mac_map_loaded', False) or int(audit.get('mac_hits', 0)) == 0:\n"
+        "      print('Error Report:'); print('MAC map not loaded or no MACs matched; ensure trackable_objects.json is in the app root and passed explicitly.'); raise SystemExit(1)\n"
+        "  print(f\"AUDIT mac_map_loaded={audit.get('mac_map_loaded')} mac_col={audit.get('mac_col_selected')} macs_seen={audit.get('macs_seen')} mac_hits={audit.get('mac_hits')} uids_seen={audit.get('uids_seen')} uid_hits={audit.get('uid_hits')} rows_total={audit.get('rows_total')} trade_rate={audit.get('trade_nonempty_rate')}\")\n"
         "  import pandas as pd\n"
         "  df = pd.DataFrame(raw.get('rows', []))\n"
         "  if df.columns.duplicated().any(): df = df.loc[:, ~df.columns.duplicated()]\n"
@@ -169,8 +239,7 @@ def build_user_message(user_prompt: str, csv_paths: List[str], project_dir: Path
         "  # Required columns check (after first file)\n"
         "  cols = set(df.columns.astype(str))\n"
         "  if not ((('trackable' in cols) or ('trackable_uid' in cols)) and ('trade' in cols) and ('x' in cols) and ('y' in cols)):\n"
-        "      print('Error Report:'); print('Missing required columns for analysis.')\n"
-        "      print('Columns detected: ' + ','.join(df.columns.astype(str))); raise SystemExit(1)\n"
+        "      print('Error Report:'); print('Missing required columns for analysis.'); print('Columns detected: ' + ','.join(df.columns.astype(str))); raise SystemExit(1)\n"
         "\n"
         "TABLE POLICY: Default is NO table sections. Only add a table if the user explicitly asks for table/rows/tabular/CSV.\n"
         "TIME: Use dt.floor('h'), never 'H'. Use ts_utc for ALL analytics/zones.\n"
@@ -203,9 +272,9 @@ def build_user_message(user_prompt: str, csv_paths: List[str], project_dir: Path
         "-----------",
         user_prompt,
         "",
-        "CSV INPUTS (absolute paths)",
-        "---------------------------",
-        csv_lines,
+        "CSV INPUTS (absolute paths or empty if using DB auto-select)",
+        "------------------------------------------------------------",
+        csv_lines or "(none — will auto-select from ROOT/db if dates are present)",
         "",
         "LOCAL ASSETS (present/missing — read from disk)",
         "-----------------------------------------------",
@@ -227,15 +296,16 @@ def build_user_message(user_prompt: str, csv_paths: List[str], project_dir: Path
     return "\n".join(parts)
 
 def build_minimal_user_message(user_prompt: str, csv_paths: List[str]) -> str:
-    csv_lines = "\n".join(f" - {p}" for p in csv_paths)
+    csv_lines = "\n".join(f" - {p}" for p in csv_paths) or "(none — will auto-select from ROOT/db if dates are present)"
     return f"""
 Return ONE Python script in a single code block and nothing else.
 
 Requirements:
-- CLI: python generated.py "<USER_PROMPT>" /abs/csv1 [/abs/csv2 ...]
+- CLI: python generated.py "<USER_PROMPT>" [/abs/csv1 [/abs/csv2 ...]]   # CSVs optional
 - Resolve ROOT from INFOZONE_ROOT or __file__; OUT_DIR = INFOZONE_OUT_DIR or first CSV dir (mkdir -p).
+- If csv_paths is empty or contains directories, parse dates from the prompt and auto-select from ROOT/db using hyphen filenames (positions_YYYY-MM-DD.csv / positions_MM-DD.csv).
 - Import local helpers; save PDF/PNGs to OUT_DIR; print file:/// links exactly.
-- Per-file processing (memory-safe); emergency floor crop: keep x>=12000 & y>=15000; use dt.floor("h").
+- Per-file processing (memory-safe); priority floor crop: keep x>=12000 & y>=15000; use dt.floor("h").
 - Default: Summary + Charts; tables only if explicitly requested.
 
 CSV INPUTS:
@@ -325,7 +395,6 @@ def generate_and_run(user_prompt: str, csv_paths: List[str], project_dir: Path) 
     model_list: List[str] = []
     if ENV_MODEL:
         model_list.append(ENV_MODEL)
-    # Prefer gpt-5 if not set explicitly
     if "gpt-5" not in model_list:
         model_list.insert(0, "gpt-5")
     model_list += [m for m in FALLBACK_MODELS if m not in model_list]
@@ -348,7 +417,7 @@ def generate_and_run(user_prompt: str, csv_paths: List[str], project_dir: Path) 
     script_path.write_text(code_text, encoding="utf-8")
     print(f"[{now_ts()}] [INFO] Wrote generated script to {script_path}")
 
-    # Execute with project root on PYTHONPATH and INFOZONE_ROOT; pass through INFOZONE_OUT_DIR if set by server.py
+    # Execute with project root on PYTHONPATH and INFOZONE_ROOT; pass through INFOZONE_OUT_DIR if set by server/runner
     cmd = [sys.executable, str(script_path), user_prompt] + csv_paths
     print(f"[{now_ts()}] [INFO] Executing generated code:\n$ {' '.join(cmd)}\n(CWD) {project_dir}\n", flush=True)
 
@@ -373,12 +442,12 @@ def generate_and_run(user_prompt: str, csv_paths: List[str], project_dir: Path) 
 def main():
     ap = argparse.ArgumentParser(description="Generate analysis code and execute locally (container-safe paths).")
     ap.add_argument("prompt", help="User prompt for the analysis (quoted)")
-    # CHANGE: allow zero or more CSV paths (files or directories). Auto-select happens in the generated script.
-    ap.add_argument("csv", nargs="*", help="CSV path(s) or directories")  # <- was nargs="+"
+    # CSVs optional (files or directories) — DB auto-select is embedded in the generated script
+    ap.add_argument("csv", nargs="*", help="CSV path(s) or directories")
     args = ap.parse_args()
 
     project_dir = Path(__file__).resolve().parent
-    # Force absolute paths for whatever the user supplied; existence checks will be handled by the generated script.
+    # Absolute paths for whatever the user supplied; existence checks handled by the generated script
     csv_paths = [str(Path(p).resolve()) for p in (args.csv or [])]
 
     rc = generate_and_run(args.prompt, csv_paths, project_dir)
