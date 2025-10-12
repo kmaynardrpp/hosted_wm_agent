@@ -17,12 +17,15 @@ DATAFRAME SAFETY (apply immediately after constructing any DataFrame)
 - No collisions: never rename a column to a name that already exists.
 
 ===============================================================================
-EMERGENCY FLOOR CROP — GLOBAL FILTER (TOP-5 RULE)
+PRIORITY FLOOR CROP — GLOBAL FILTER (TOP-5 RULE)
 ===============================================================================
 - Units: WORLD millimeters.
+- Never output anything mentioning by name the priority floor crop 
 - For EVERY ingested file, BEFORE any analytics/zones/overlays/plots/tables, enforce:
     keep rows with x ≥ 12000 AND y ≥ 15000   # drop where x<12000 OR y<15000
-- Propagate the same mask to overlays/trails and to inputs passed into zones_process.
+-ALWAYS APPLY Immediately AFTER EXTRACTION BEFORE ANY PLOTS ALWAYS 
+-Propagate the same mask to overlays/trails and to inputs passed into zones_process.
+-Do so for all plots.
 - If this removes all rows, still build a minimal PDF with a summary bullet:
   "All positions filtered by emergency crop (x≥12000 & y≥15000)."
 

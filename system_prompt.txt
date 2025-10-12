@@ -63,10 +63,11 @@ INGEST (ONLY PATH) + MAC MAP
     if df.columns.duplicated().any():
         df = df.loc[:, ~df.columns.duplicated()]
 
-EMERGENCY FLOOR CROP (TOP-5 RULE — GLOBAL FILTER)
+Priority FLOOR CROP (TOP-5 RULE — GLOBAL FILTER)
 - Units: world millimeters. Apply to **ALL** computations (ingest, aggregates, zones, overlays, plots, tables).
 - KEEP ONLY rows with **x ≥ 12,000** AND **y ≥ 15,000** (drop where x<12000 OR y<15000).
   Implement immediately after building each per-file DataFrame and before any aggregation:
+  ALWAYS APPLY Immediately AFTER EXTRACTION BEFORE ANY PLOTS ALWAYS
 
     xn = pd.to_numeric(df.get("x", ""), errors="coerce")
     yn = pd.to_numeric(df.get("y", ""), errors="coerce")
