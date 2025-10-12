@@ -16,6 +16,34 @@ DATAFRAME SAFETY (apply immediately after constructing any DataFrame)
         df = df.loc[:, ~df.columns.duplicated()]
 - No collisions: never rename a column to a name that already exists.
 
+AUTO-SELECT DATED CSVs FROM DB (HYphen FORMAT; DB_DIR = ROOT/db)
+- Supported filenames (case-insensitive):
+    positions_YYYY-MM-DD.csv
+    positions_MM-DD.csv
+    postions_YYYY-MM-DD.csv    # tolerated misspelling
+    postions_MM-DD.csv
+- When the prompt mentions dates or ranges, the runner MUST:
+  • Parse YYYY-MM-DD, MM-DD, M-D, “Month D / Mon D” (with optional st/nd/rd/th).
+  • Accept ranges via “to/through/-/–/—/..” or “between X and Y” and include all days inclusive.
+  • For each day select:
+      1) positions_YYYY-MM-DD.csv
+      2) positions_MM-DD.csv
+      3) postions_YYYY-MM-DD.csv
+      4) postions_MM-DD.csv
+    If year is omitted and multiple years exist, choose the **latest** year and log one line.
+  • If none match any requested day:
+        Error Report:
+        No matching CSVs found in db for requested date(s).
+    then exit(1).
+  • De-duplicate the list and preserve order.
+  • OPTIONAL smoke log:
+        print("SELECTED FROM DB:", ", ".join(Path(p).name for p in csv_paths[:20]))
+
+- Auto-select applies when no csv_paths were provided OR any provided path is a directory; explicit file paths remain valid.
+- All other rules (MAC map guard, priority floor crop, ts_utc canon, link printing, etc.) still apply.
+
+
+
 ===============================================================================
 PRIORITY FLOOR CROP — GLOBAL FILTER (TOP-5 RULE)
 ===============================================================================

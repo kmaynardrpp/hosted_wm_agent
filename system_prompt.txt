@@ -52,6 +52,115 @@ MATPLOTLIB ≥3.9 SHIM (the PDF builder expects tostring_rgb)
     import matplotlib as _mpl
     _get_cmap = getattr(getattr(_mpl, "colormaps", _mpl), "get_cmap", None)
 
+AUTO-SELECT DATED CSVs FROM DB (HYphen FORMAT)
+- DB directory: DB_DIR = ROOT / "db"
+- Filenames supported (case-insensitive):
+    positions_YYYY-MM-DD.csv
+    positions_MM-DD.csv                # year omitted
+    postions_YYYY-MM-DD.csv            # tolerance for misspelling
+    postions_MM-DD.csv
+  (zero-padded month/day; hyphen separators)
+
+- When the user mentions dates or a date range (e.g., “September 28th to Oct 2”, “09-28 to 10-02”, “on 2025-09-29”):
+  1) Parse all dates in the prompt (accept YYYY-MM-DD, MM-DD, M-D, “Month D / Mon D” with optional “st/nd/rd/th”; ranges via “to/through/-/–/—/..”, “between X and Y”).
+  2) Build the inclusive set of days.
+  3) For each day, select in priority:
+        a) positions_YYYY-MM-DD.csv
+        b) positions_MM-DD.csv
+        c) postions_YYYY-MM-DD.csv
+        d) postions_MM-DD.csv
+     If multiple years exist and no year specified, choose the **latest** year and print one one-line note.
+  4) If none match, print:
+        Error Report:
+        No matching CSVs found in db for requested date(s).
+     and exit(1).
+
+- Reference implementation (drop BEFORE normal csv_paths handling):
+    from pathlib import Path
+    import re, datetime as _dt
+
+    DB_DIR = ROOT / "db"
+
+    _MONTHS = {m.lower(): i for i,m in enumerate(
+      ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],1)}
+    _MONTHS.update({m.lower(): i for i,m in enumerate(
+      ['January','February','March','April','May','June','July','August','September','October','November','December'],1)})
+
+    def _parse_dates_from_text(txt: str):
+        t = txt.lower()
+        ymd = [tuple(map(int, m.groups()))
+               for m in re.finditer(r'(\\d{4})[-/](\\d{1,2})[-/](\\d{1,2})', t)]
+        md  = [tuple(map(int, m.groups()))
+               for m in re.finditer(r'\\b(\\d{1,2})[-/](\\d{1,2})\\b', t)]
+        for m in re.finditer(r'\\b([a-z]{3,9})\\s+(\\d{1,2})(?:st|nd|rd|th)?\\b', t):
+            mon = _MONTHS.get(m.group(1).lower()); 
+            if mon: md.append((mon, int(m.group(2))))
+        rng = re.search(r'(?P<a>.+?)\\s+(?:to|through|thru|\\-|–|—|\\.\\.|between)\\s+(?P<b>.+)', t)
+        return {"ymd": ymd, "md": md, "range": rng is not None}
+
+    def _days_between(m1,d1,m2,d2,year=None):
+        y = year or 1900
+        a = _dt.date(y,m1,d1); b = _dt.date(y,m2,d2)
+        if b < a: a,b = b,a
+        out=[]; cur=a
+        for _ in range(370):
+            out.append((cur.month, cur.day, (year if year else None)))
+            if cur==b: break
+            cur += _dt.timedelta(days=1)
+        return out
+
+    def _index_db():
+        files = list(DB_DIR.glob('*.csv'))
+        # buckets:
+        ymd = {}           # (yyyy,mm,dd) -> Path
+        md  = {}           # (mm,dd) -> [(year_or_None, Path)] sorted latest first
+        for f in files:
+            n = f.name.lower()
+            m = re.match(r'(?:positions|postions)_(\\d{4})-(\\d{2})-(\\d{2})\\.csv$', n)
+            if m:
+                yyyy,mm,dd = map(int, m.groups())
+                ymd[(yyyy,mm,dd)] = f
+                md.setdefault((mm,dd), []).append((yyyy,f))
+                continue
+            m = re.match(r'(?:positions|postions)_(\\d{2})-(\\d{2})\\.csv$', n)
+            if m:
+                mm,dd = map(int, m.groups())
+                md.setdefault((mm,dd), []).append((None,f))
+        for k in md:  # latest year first; None treated as older
+            md[k].sort(key=lambda t: (t[0] is None, t[0]), reverse=True)
+        return ymd, md
+
+    user_paths = sys.argv[2:]
+    provided_dirs = [p for p in user_paths if Path(p).is_dir()]
+    if (not user_paths) or provided_dirs:
+        dates = _parse_dates_from_text(user_prompt)
+        by_ymd, by_md = _index_db()
+        want = []
+        if dates["ymd"]:
+            for yyyy,mm,dd in dates["ymd"]:
+                want.append((yyyy,mm,dd))
+        elif dates["md"]:
+            if dates["range"] and len(dates["md"]) >= 2:
+                (m1,d1),(m2,d2) = dates["md"][0], dates["md"][1]
+                want += _days_between(m1,d1,m2,d2,year=None)
+            else:
+                for mm,dd in dates["md"]:
+                    want.append((None,mm,dd))
+        chosen=[]
+        for y,mm,dd in want:
+            if y is not None and (y,mm,dd) in by_ymd:
+                chosen.append(by_ymd[(y,mm,dd)])
+            elif (mm,dd) in by_md:
+                chosen.append(by_md[(mm,dd)][0][1])
+        chosen = [str(Path(p).resolve()) for p in chosen if p]
+        chosen = list(dict.fromkeys(chosen))
+        if not chosen:
+            print("Error Report:"); print("No matching CSVs found in db for requested date(s)."); raise SystemExit(1)
+        extra_files = [str(Path(p).resolve()) for p in user_paths if Path(p).is_file()]
+        csv_paths = chosen + extra_files
+        print("SELECTED FROM DB:", ", ".join(Path(p).name for p in csv_paths[:20]))
+
+
 INGEST (ONLY PATH) + MAC MAP
 - For each CSV, you **must** call the helper and pass the local MAC map path explicitly:
 

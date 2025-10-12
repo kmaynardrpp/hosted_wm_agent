@@ -373,12 +373,13 @@ def generate_and_run(user_prompt: str, csv_paths: List[str], project_dir: Path) 
 def main():
     ap = argparse.ArgumentParser(description="Generate analysis code and execute locally (container-safe paths).")
     ap.add_argument("prompt", help="User prompt for the analysis (quoted)")
-    ap.add_argument("csv", nargs="+", help="CSV path(s)")
+    # CHANGE: allow zero or more CSV paths (files or directories). Auto-select happens in the generated script.
+    ap.add_argument("csv", nargs="*", help="CSV path(s) or directories")  # <- was nargs="+"
     args = ap.parse_args()
 
     project_dir = Path(__file__).resolve().parent
-    # Force absolute CSV paths (fail fast if missing not enforced here to allow server-side existence checks)
-    csv_paths   = [str(Path(p).resolve()) for p in args.csv]
+    # Force absolute paths for whatever the user supplied; existence checks will be handled by the generated script.
+    csv_paths = [str(Path(p).resolve()) for p in (args.csv or [])]
 
     rc = generate_and_run(args.prompt, csv_paths, project_dir)
     if rc != 0:
@@ -387,4 +388,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-#fffffff
