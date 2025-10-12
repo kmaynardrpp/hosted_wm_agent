@@ -19,10 +19,10 @@ from __future__ import annotations
 from typing import Dict, Any, List
 
 DEFAULTS: Dict[str, int] = {
-    "MAX_PAGES": 12,
+    "MAX_PAGES": 16,
     "MAX_TABLE_ROWS_TOTAL": 180,
     "MAX_TEXT_LINES_TOTAL": 900,
-    "MAX_FIGURES": 6,  # allow richer overlays + supporting charts
+    "MAX_FIGURES": 15,  # allow richer overlays + supporting charts
 }
 
 def _count_text_lines(sections: List[Dict[str, Any]]) -> int:
