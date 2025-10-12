@@ -27,7 +27,7 @@ PRIORITY FLOOR CROP — GLOBAL FILTER (TOP-5 RULE)
 -Propagate the same mask to overlays/trails and to inputs passed into zones_process.
 -Do so for all plots.
 - If this removes all rows, still build a minimal PDF with a summary bullet:
-  "All positions filtered by emergency crop (x≥12000 & y≥15000)."
+
 
 ===============================================================================
 TABLES DEFAULT OFF
