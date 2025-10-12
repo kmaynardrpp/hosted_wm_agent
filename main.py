@@ -21,9 +21,18 @@ except Exception:
 # ---------- Tunables / Defaults ----------
 FALLBACK_MODELS = ["gpt-4o-mini", "gpt-4o", "gpt-4.1-mini", "gpt-4.1"]
 ENV_MODEL = os.environ.get("OPENAI_MODEL", "").strip()
-REASONING_EFFORT = os.environ.get("OPENAI_REASONING_EFFORT", "medium").lower()  # low | medium | high
-TIMEOUT_SEC = int(os.environ.get("RTLS_CODE_TIMEOUT_SEC", "1800"))              # child script timeout
-RUNS_DIR = ".runs"                                                               # where generator writes scripts
+
+# Reasoning effort & output tokens
+REASONING_EFFORT = os.environ.get("IZ_REASONING_EFFORT", os.environ.get("OPENAI_REASONING_EFFORT", "medium")).lower()
+MAX_OUTPUT_TOKENS = int(os.environ.get("IZ_MAX_OUTPUT_TOKENS", os.environ.get("OPENAI_MAX_OUTPUT_TOKENS", "12000")))
+
+# Size caps (to avoid excessively large requests)
+GUIDELINES_CAP = int(os.environ.get("IZ_GUIDELINES_CAP", "0") or "0")   # 0 = no cap
+CONTEXT_CAP    = int(os.environ.get("IZ_CONTEXT_CAP", "8000"))
+HELPER_CAP     = int(os.environ.get("IZ_HELPER_CAP", "8000"))
+
+TIMEOUT_SEC = int(os.environ.get("RTLS_CODE_TIMEOUT_SEC", "1800"))  # child script timeout
+RUNS_DIR = ".runs"                                                   # where generator writes scripts
 
 # ---------- Small helpers ----------
 def now_ts() -> str:
@@ -38,9 +47,11 @@ def ensure_dir(p: Path) -> None:
 def read_text(p: Path, max_chars: int | None = None) -> str:
     try:
         txt = p.read_text(encoding="utf-8", errors="ignore")
-        return txt if max_chars is None else txt[:max_chars]
     except Exception:
         return ""
+    if max_chars and max_chars > 0 and len(txt) > max_chars:
+        return txt[:max_chars]
+    return txt
 
 def extract_code_block(text: str) -> str:
     """Extract the first ```python ...``` block; else first ```...```; else full text."""
@@ -85,7 +96,8 @@ def model_supports_reasoning(model: str) -> bool:
 
 # ---------- Prompt builders ----------
 def build_system_message(project_dir: Path) -> str:
-    sys_prompt = read_text(project_dir / "system_prompt.txt").strip()
+    sys_prompt = read_text(project_dir / "system_prompt.txt",
+                           max_chars=(GUIDELINES_CAP if GUIDELINES_CAP > 0 else None)).strip()
     if not sys_prompt:
         sys_prompt = "You are a code generator that returns one Python script as a single code block."
     # Hard, explicit output constraint layer
@@ -95,21 +107,28 @@ def build_system_message(project_dir: Path) -> str:
     )
     return sys_prompt
 
+def _cap(n_full: int, trimmed: bool, default_full: int, default_trim: int) -> int:
+    # choose helper/context cap depending on trimmed flag
+    return default_trim if trimmed else default_full
+
 def build_user_message(user_prompt: str, csv_paths: List[str], project_dir: Path, trimmed: bool=False) -> str:
     # include full guidelines and a trimmed context; helper excerpts to ground APIs
-    guidelines = read_text(project_dir / "guidelines.txt", max_chars=None)
-    context = read_text(project_dir / "context.txt", max_chars=(4000 if trimmed else 8000))
+    context_cap  = _cap(len(user_prompt), trimmed, CONTEXT_CAP, 4000)
+    helper_cap   = _cap(len(user_prompt), trimmed, HELPER_CAP, 4000)
 
-    helper_caps = 8000 if not trimmed else 4000
+    guidelines = read_text(project_dir / "guidelines.txt",
+                           max_chars=(GUIDELINES_CAP if GUIDELINES_CAP > 0 else None))
+    context    = read_text(project_dir / "context.txt", max_chars=context_cap)
+
     helpers = [
-        ("extractor.py",           helper_caps),
-        ("pdf_creation_script.py", helper_caps),
-        ("chart_policy.py",        helper_caps),
-        ("zones_process.py",       helper_caps),
-        ("report_limits.py",       4000 if not trimmed else 2000),
-        ("report_config.json",     4000 if not trimmed else 2000),
-        ("floorplans.json",        4000 if not trimmed else 2000),
-        ("zones.json",             4000 if not trimmed else 2000),
+        ("extractor.py",           helper_cap),
+        ("pdf_creation_script.py", helper_cap),
+        ("chart_policy.py",        helper_cap),
+        ("zones_process.py",       helper_cap),
+        ("report_limits.py",       (2000 if trimmed else 4000)),
+        ("report_config.json",     (2000 if trimmed else 4000)),
+        ("floorplans.json",        (2000 if trimmed else 4000)),
+        ("zones.json",             (2000 if trimmed else 4000)),
     ]
     helper_snips: List[str] = []
     for fname, cap in helpers:
@@ -131,7 +150,7 @@ def build_user_message(user_prompt: str, csv_paths: List[str], project_dir: Path
 
     csv_lines = "\n".join(f" - {p}" for p in csv_paths)
 
-    # Big instruction block: keep aligned with your system/guidelines
+    # Big instruction block: aligned with your system/guidelines
     INSTR = (
         "INSTRUCTIONS (MANDATORY — FOLLOW EXACTLY)\n"
         "-----------------------------------------\n"
@@ -163,6 +182,9 @@ def build_user_message(user_prompt: str, csv_paths: List[str], project_dir: Path
         "def _parse_dates_from_text(txt: str):\n"
         "    t = txt.lower()\n"
         "    ymd = [tuple(map(int, m.groups())) for m in _re.finditer(r'(\\d{4})[-/](\\d{1,2})[-/](\\d{1,2})', t)]\n"
+        "    # Also accept MM-DD-YYYY → normalize to (YYYY,MM,DD)\n"
+        "    for m in _re.finditer(r'(\\d{1,2})[-/](\\d{1,2})[-/](\\d{4})', t):\n"
+        "        ymd.append((int(m.group(3)), int(m.group(1)), int(m.group(2))))\n"
         "    md  = [tuple(map(int, m.groups())) for m in _re.finditer(r'\\b(\\d{1,2})[-/](\\d{1,2})\\b', t)]\n"
         "    for m in _re.finditer(r'\\b([a-z]{3,9})\\s+(\\d{1,2})(?:st|nd|rd|th)?\\b', t):\n"
         "        mon = _MONTHS.get(m.group(1).lower()); \n"
@@ -170,6 +192,7 @@ def build_user_message(user_prompt: str, csv_paths: List[str], project_dir: Path
         "    rng = _re.search(r'(?P<a>.+?)\\s+(?:to|through|thru|\\-|–|—|\\.\\.|between)\\s+(?P<b>.+)', t)\n"
         "    return {'ymd': ymd, 'md': md, 'range': rng is not None}\n"
         "def _days_between(m1,d1,m2,d2,year=None):\n"
+        "    # If year omitted, caller may fill DEFAULT_YEAR (set in system prompt); default here is 1900 to avoid confusion\n"
         "    y = year or 1900\n"
         "    a = _dt.date(y,m1,d1); b = _dt.date(y,m2,d2)\n"
         "    if b < a: a,b = b,a\n"
@@ -230,7 +253,7 @@ def build_user_message(user_prompt: str, csv_paths: List[str], project_dir: Path
         "  import pandas as pd\n"
         "  df = pd.DataFrame(raw.get('rows', []))\n"
         "  if df.columns.duplicated().any(): df = df.loc[:, ~df.columns.duplicated()]\n"
-        "  # Emergency floor crop (GLOBAL): keep x>=12000 & y>=15000 in world mm\n"
+        "  # NOTE: If GV needs a point ignore instead of a crop, this block should be replaced accordingly in the prompt.\n"
         "  xn = pd.to_numeric(df.get('x',''), errors='coerce'); yn = pd.to_numeric(df.get('y',''), errors='coerce')\n"
         "  df = df.loc[(xn >= 12000) & (yn >= 15000)].copy()\n"
         "  # Timestamp canon\n"
@@ -258,10 +281,13 @@ def build_user_message(user_prompt: str, csv_paths: List[str], project_dir: Path
         "      except Exception as e2:\n"
         "          print('Error Report:'); print(f'Lite PDF failed: {e2.__class__.__name__}: {e2}'); traceback.print_exc(limit=2); raise SystemExit(1)\n"
         "\n"
-        "PRINT LINKS (success only):\n"
-        "  def file_uri(p): return 'file:///' + str(p.resolve()).replace('\\\\','/')\n"
-        "  print(f\"[Download the PDF]({file_uri(pdf_path)})\")\n"
-        "  for i, pth in enumerate(png_paths, 1): print(f\"[Download Plot {i}]({file_uri(pth)})\")\n"
+        "PRINT LINKS (success only) — USE SAFE HELPER:\n"
+        "  from pathlib import Path as __P\n"
+        "  def _print_links(pdf_path, png_paths):\n"
+        "      def file_uri(p): return 'file:///' + str(__P(p).resolve()).replace('\\\\','/')\n"
+        "      print(f\"[Download the PDF]({file_uri(pdf_path)})\")\n"
+        "      for i, p in enumerate(png_paths or [], 1): print(f\"[Download Plot {i}]({file_uri(p)})\")\n"
+        "  _print_links(pdf_path, png_paths)\n"
         "\n"
         "MINIMAL/LITE MODE: If empty after filters, still emit a concise summary (no tables unless explicitly requested) and build PDF.\n"
     )
@@ -320,7 +346,7 @@ def responses_create_text(client: OpenAI, model: str, system_msg: str, user_msg:
         "model": model,
         "input": [{"role": "system", "content": system_msg},
                   {"role": "user", "content": user_msg}],
-        "max_output_tokens": 12000,
+        "max_output_tokens": MAX_OUTPUT_TOKENS,
     }
     if model_supports_reasoning(model):
         kwargs["reasoning"] = {"effort": REASONING_EFFORT}
@@ -350,7 +376,7 @@ def try_models_with_retries(client: OpenAI, models: List[str],
                 if code and not skeletal:
                     print(f"[{now_ts()}] [INFO] Code block OK with model={m} variant={variant}")
                     return m, code
-                # repair attempt
+                # repair attempt (validation-level)
                 print(f"[{now_ts()}] [WARN] Code failed validation ({issues}). Retrying with REPAIR prompt.")
                 repair_prompt = msg + "\n\nREPAIR:\n- Expand to full, production-quality script.\n- Fix: " + "; ".join(issues) + "\n- Return ONE code block only (no fences)."
                 raw2 = responses_create_text(client, m, system_msg, repair_prompt)
@@ -404,13 +430,36 @@ def generate_and_run(user_prompt: str, csv_paths: List[str], project_dir: Path) 
     print(f"[{now_ts()}] [INFO] Using model: {model_used}")
     print(f"[{now_ts()}] [INFO] Final code length: {len(code_text)} chars")
 
-    # Compile preflight to catch fence/typo bugs early
+    # Compile preflight; if it fails, run a targeted SYNTAX repair that enforces safe link printing.
     try:
         compile(code_text, "<generated>", "exec")
     except SyntaxError as e:
-        print(f"[{now_ts()}] [ERROR] Compile failed: {e.msg} at line {e.lineno}: {e.text}", file=sys.stderr)
-        return 4
+        err_line = (e.text or "").strip()
+        err_msg  = f"{e.msg} at line {e.lineno}: {err_line}"
+        print(f"[{now_ts()}] [ERROR] Compile failed: {err_msg}", file=sys.stderr)
 
+        repair_prompt = (
+            user_msg_full
+            + "\n\nREPAIR-SYNTAX:\n"
+            + "- Fix ALL syntax errors so that compile(..., 'exec') succeeds.\n"
+            + "- Replace ANY inline link printing with a safe helper to avoid nested f-string parentheses:\n"
+            + "    from pathlib import Path as __P\n"
+            + "    def _print_links(pdf_path, png_paths):\n"
+            + "        def file_uri(p): return 'file:///' + str(__P(p).resolve()).replace('\\\\','/')\n"
+            + "        print(f\"[Download the PDF]({file_uri(pdf_path)})\")\n"
+            + "        for i, p in enumerate(png_paths or [], 1): print(f\"[Download Plot {i}]({file_uri(p)})\")\n"
+            + "- Use regex with correct named groups for ranges: (?P<a>...) and (?P<b>...).\n"
+            + f"- Compiler error to fix: {err_msg}\n"
+        )
+        raw = responses_create_text(client, model_used, system_msg, repair_prompt)
+        code_text = strip_fences(extract_code_block(raw))
+        try:
+            compile(code_text, "<generated>", "exec")
+        except SyntaxError as e2:
+            print(f"[{now_ts()}] [ERROR] Compile failed again: {e2.msg} at line {e2.lineno}: {e2.text}", file=sys.stderr)
+            return 4
+
+    # Write & run
     runs_dir = project_dir / RUNS_DIR
     ensure_dir(runs_dir)
     script_path = runs_dir / f"rtls_run_{now_stamp()}.py"

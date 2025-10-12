@@ -340,6 +340,27 @@ if not (ROOT / "redpoint_logo.png").exists():  print("NOTICE: logo missing; PDF 
 if not (ROOT / "floorplans.json").exists():    print("NOTICE: floorplans.json missing; overlay will skip image.")
 if not (ROOT / "zones.json").exists():         print("NOTICE: zones.json missing; zones will be skipped unless present in data.")
 
+SAFE LINK PRINTING (MANDATORY)
+- Define and use a helper to avoid nested parentheses in f-strings:
+
+    from pathlib import Path as _P
+    def _print_links(pdf_path, png_paths):
+        def file_uri(p):
+            return "file:///" + str(_P(p).resolve()).replace("\\\\", "/")
+        print(f"[Download the PDF]({file_uri(pdf_path)})")
+        for i, p in enumerate(png_paths or [], 1):
+            print(f"[Download Plot {i}]({file_uri(p)})")
+
+- After a successful PDF build, call ONLY:
+    _print_links(pdf_path, png_paths)
+
+- NAMING SANITY: define FLOORJSON = ROOT / "floorplans.json" and NEVER use alternate names.
+  Add harmless alias to prevent NameError:
+    try: FLOJSON = FLOORJSON
+    except NameError: pass
+
+- REGEX PREFLIGHT: compile the range parser BEFORE use:
+    _ = re.compile(r'(?P<a>.+?)\\s+(?:to|through|thru|\\-|–|—|\\.\\.|between)\\s+(?P<b>.+)')
 
 
 MINIMAL / LITE MODE
