@@ -24,6 +24,7 @@ AUTO-SELECT DATED CSVs FROM DB (HYphen FORMAT; DB_DIR = ROOT/db)
     postions_MM-DD.csv
 - When the prompt mentions dates or ranges, the runner MUST:
   • Parse YYYY-MM-DD, MM-DD, M-D, “Month D / Mon D” (with optional st/nd/rd/th).
+  IF NO YEAR GIVEN ALWAYS ASSUME 2025
   • Accept ranges via “to/through/-/–/—/..” or “between X and Y” and include all days inclusive.
   • For each day select:
       1) positions_YYYY-MM-DD.csv
