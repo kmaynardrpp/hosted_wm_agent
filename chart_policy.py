@@ -100,38 +100,79 @@ def _find_floorplan_image(image_path: Optional[str]) -> Optional[str]:
 def _load_floorplan(floorplans_path: str, override_image_path: Optional[str]=None) -> Optional[Dict[str, object]]:
     """
     Load extent from floorplans.json and raster from fixed floorplan filename(s).
-    Extent calculation per provided spec (world mm rectangle).
+
+    SELECTION RULE:
+      1) If floorplans.json contains items with "selected": 1, choose one of them.
+         - If multiple are selected, prefer the one whose display_name/filename
+           matches the raster on disk (if provided).
+      2) Else, if no items are selected, try filename/display_name match.
+      3) Else, fall back to the first item.
     """
     if not os.path.exists(floorplans_path):
         return None
+
     try:
         with open(floorplans_path, "r", encoding="utf-8") as f:
             data = json.load(f)
-        fp = (data.get("floorplans") or data.get("plans") or data or [None])
-        if isinstance(fp, list):
-            fp = fp[0]
-        if not fp:
-            return None
 
-        width  = float(fp.get("width", 0))
-        height = float(fp.get("height", 0))
-        x_c    = float(fp.get("image_offset_x", 0))
-        y_c    = float(fp.get("image_offset_y", 0))
-        image_scale = float(fp.get("image_scale", 0))  # typically meters/pixel
+        plans = data.get("floorplans") or data.get("plans") or data or []
+        if isinstance(plans, dict):
+            plans = [plans]
+        if not isinstance(plans, list) or not plans:
+            return None
+    except Exception:
+        return None
+
+    # Resolve raster path (use explicit override if present, otherwise fixed candidates)
+    img_path = _find_floorplan_image(override_image_path)
+    if not img_path:
+        return None
+
+    def _basename(v: str) -> str:
+        try:
+            return os.path.basename(v).lower()
+        except Exception:
+            return str(v or "").lower()
+
+    raster_name = _basename(img_path)
+
+    # 1) prefer selected==1
+    selected = [p for p in plans if str(p.get("selected", 0)).lower() in ("1", "true")]
+    def _matches(plan: dict) -> bool:
+        for k in ("display_name", "filename", "image_filename", "name"):
+            if _basename(str(plan.get(k, ""))) == raster_name:
+                return True
+        return False
+
+    chosen = None
+    if selected:
+        chosen = next((p for p in selected if _matches(p)), selected[0])
+    else:
+        # 2) try filename/display_name match among all plans
+        chosen = next((p for p in plans if _matches(p)), None)
+
+    # 3) ultimate fallback
+    if chosen is None:
+        chosen = plans[0]
+
+    try:
+        width  = float(chosen.get("width", 0))
+        height = float(chosen.get("height", 0))
+        x_c    = float(chosen.get("image_offset_x", 0))
+        y_c    = float(chosen.get("image_offset_y", 0))
+        image_scale = float(chosen.get("image_scale", 0))  # meters/pixel
 
         scale = image_scale * 100.0  # mm/pixel
-        x_min = (x_c - width/2.0)  * scale
-        x_max = (x_c + width/2.0)  * scale
-        y_min = (y_c - height/2.0) * scale
-        y_max = (y_c + height/2.0) * scale
+        x_min = (x_c - width  / 2.0) * scale
+        x_max = (x_c + width  / 2.0) * scale
+        y_min = (y_c - height / 2.0) * scale
+        y_max = (y_c + height / 2.0) * scale
 
-        img_path = _find_floorplan_image(override_image_path)
-        if not img_path:
-            return None
         img = plt.imread(img_path)
         return {"extent": (x_min, x_max, y_min, y_max), "image": img}
     except Exception:
         return None
+
 
 def _colors_for_categories(categories: List[str]) -> Dict[str, str]:
     base = plt.cm.get_cmap("tab10")
