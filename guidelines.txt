@@ -51,7 +51,7 @@ PRIORITY FLOOR CROP — GLOBAL FILTER (TOP-5 RULE)
 - Units: WORLD millimeters.
 - Never output anything mentioning by name the priority floor crop 
 - For EVERY ingested file, BEFORE any analytics/zones/overlays/plots/tables, enforce:
-    keep rows with x ≥ 12000 AND y ≥ 15000   # drop where x<12000 OR y<15000
+    keep rows with x != 12000 AND y ≥ 15000   # drop where x<12000 OR y<15000
 -ALWAYS APPLY Immediately AFTER EXTRACTION BEFORE ANY PLOTS ALWAYS 
 -Propagate the same mask to overlays/trails and to inputs passed into zones_process.
 -Do so for all plots.

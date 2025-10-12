@@ -180,31 +180,35 @@ LINKS (SUCCESS; WINDOWS/LINUX SAFE)
 LEGEND & CATEGORY LIMITS
 - Only call `legend()` if there are labeled artists and ≤12 categories.
 
-AUTO-SELECT DATED CSVs FROM DB (HYphen FORMAT)
+AUTO-SELECT DATED CSVs FROM DB (HYphen FORMAT; ASSUME 2025 IF YEAR OMITTED)
 - DB directory: DB_DIR = ROOT / "db"
 - Filenames supported (case-insensitive, tolerant to 1–2 digit month/day):
     (?:positions|postions)_YYYY-MM-DD.csv
     (?:positions|postions)_MM-DD.csv
-- When the user mentions dates or a date range (e.g., “September 28th to Oct 2”, “09-28 to 10-02”, “on 2025-09-29”):
-  1) Parse dates in formats: YYYY-MM-DD, MM-DD, M-D, “Month D / Mon D” (with optional “st/nd/rd/th”); ranges via “to/through/-/–/—/..”, “between X and Y”.
-  2) Build the inclusive set of days.
-  3) For each day, select in priority:
-        a) positions_YYYY-MM-DD.csv
-        b) positions_MM-DD.csv
-     If multiple years exist and no year specified, choose the **latest** year and print one one-line note.
-  4) If none match, print a short DB debug then exit(1):
+- DATE PARSER (MANDATORY FORMATS):
+  • YYYY-MM-DD
+  • MM-DD-YYYY (normalize to (YYYY,MM,DD))
+  • MM-DD / M-D  (ASSUME YEAR **2025** if omitted)
+  • Month D / Mon D (optional st/nd/rd/th)  (ASSUME YEAR **2025** if omitted)
+- RANGE PARSING: accept “to/through/thru/–/—/-/..” and “between X and Y”; include all days inclusive.
+- SELECTION PRIORITY per day:
+    1) positions_YYYY-MM-DD.csv
+    2) positions_MM-DD.csv (used only when the prompt omitted the year; ASSUME **2025** when choosing among years)
+- If none match, print a short DB debug then exit(1):
 
-        print("DB DEBUG — found in /app/db:", ", ".join(f.name for f in DB_DIR.glob("*.csv")) or "(none)")
-        print("DB DEBUG — wanted days:", _want)
-        print("DB DEBUG — by_ymd keys:", list(_by_ymd.keys())[:10], "…", f"({len(_by_ymd)} total)")
-        print("DB DEBUG — by_md keys:",  list(_by_md.keys())[:10],  "…", f"({len(_by_md)} total)")
-        print("Error Report:"); print("No matching CSVs found in db for requested date(s)."); raise SystemExit(1)
+    print("DB DEBUG — found in /app/db:", ", ".join(f.name for f in DB_DIR.glob("*.csv")) or "(none)")
+    print("DB DEBUG — wanted days:", _want)
+    print("DB DEBUG — by_ymd keys:", list(_by_ymd.keys())[:10], "…", f"({len(_by_ymd)} total)")
+    print("DB DEBUG — by_md  keys:", list(_by_md.keys())[:10],  "…", f"({len(_by_md)} total)")
+    print("Error Report:"); print("No matching CSVs found in db for requested date(s)."); raise SystemExit(1)
 
 - Reference implementation (drop BEFORE normal csv_paths handling):
+
     from pathlib import Path
-    import re, datetime as _dt
+    import re, datetime as _dt, os
 
     DB_DIR = ROOT / "db"
+    DEFAULT_YEAR = 2025  # ASSUME 2025 UNLESS PROMPT SPECIFIES A YEAR
 
     _MONTHS = {m.lower(): i for i,m in enumerate(
       ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],1)}
@@ -214,28 +218,31 @@ AUTO-SELECT DATED CSVs FROM DB (HYphen FORMAT)
     def _parse_dates_from_text(txt: str):
         t = txt.lower()
         ymd = [tuple(map(int, m.groups()))
-               for m in re.finditer(r'(\d{4})[-/](\d{1,2})[-/](\d{1,2})', t)]
+               for m in re.finditer(r'(\\d{4})[-/](\\d{1,2})[-/](\\d{1,2})', t)]
+        # MM-DD-YYYY → normalize to (YYYY,MM,DD)
+        for m in re.finditer(r'(\\d{1,2})[-/](\\d{1,2})[-/](\\d{4})', t):
+            ymd.append((int(m.group(3)), int(m.group(1)), int(m.group(2))))
         md  = [tuple(map(int, m.groups()))
-               for m in re.finditer(r'\b(\d{1,2})[-/](\d{1,2})\b', t)]
-        for m in re.finditer(r'\b([a-z]{3,9})\s+(\d{1,2})(?:st|nd|rd|th)?\b', t):
+               for m in re.finditer(r'\\b(\\d{1,2})[-/](\\d{1,2})\\b', t)]
+        for m in re.finditer(r'\\b([a-z]{3,9})\\s+(\\d{1,2})(?:st|nd|rd|th)?\\b', t):
             mon = _MONTHS.get(m.group(1).lower()); 
             if mon: md.append((mon, int(m.group(2))))
-        rng = re.search(r'(?P<a>.+?)\s+(?:to|through|thru|\-|–|—|\.\.|between)\s+(?P<b>.+)', t)
+        rng = re.search(r'(?P<a>.+?)\\s+(?:to|through|thru|\\-|–|—|\\.\\.|between)\\s+(?P<b>.+)', t)
         return {"ymd": ymd, "md": md, "range": rng is not None}
 
     def _days_between(m1,d1,m2,d2,year=None):
-        y = year or 1900
+        y = year or DEFAULT_YEAR
         a = _dt.date(y,m1,d1); b = _dt.date(y,m2,d2)
         if b < a: a,b = b,a
         out=[]; cur=a
         for _ in range(370):
-            out.append((cur.month, cur.day, (year if year else None)))
+            out.append((cur.year, cur.month, cur.day))
             if cur==b: break
             cur += _dt.timedelta(days=1)
         return out
 
-    R_YYYY = re.compile(r'(?:positions|postions)_(\d{4})-(\d{1,2})-(\d{1,2})\.csv$', re.I)
-    R_MD   = re.compile(r'(?:positions|postions)_(\d{1,2})-(\d{1,2})\.csv$', re.I)
+    R_YYYY = re.compile(r'(?:positions|postions)_(\\d{4})-(\\d{1,2})-(\\d{1,2})\\.csv$', re.I)
+    R_MD   = re.compile(r'(?:positions|postions)_(\\d{1,2})-(\\d{1,2})\\.csv$', re.I)
 
     def _index_db():
         files = list(DB_DIR.glob('*.csv'))
@@ -253,42 +260,45 @@ AUTO-SELECT DATED CSVs FROM DB (HYphen FORMAT)
             if m:
                 mm,dd = map(int, m.groups())
                 md.setdefault((mm,dd), []).append((None,f))
-        for k in md:  # latest year first; None treated as older
+        # sort: latest year first; None treated as older
+        for k in md:
             md[k].sort(key=lambda t: (t[0] is None, t[0]), reverse=True)
         return ymd, md
 
-    user_paths = sys.argv[2:]
-    provided_dirs = [p for p in user_paths if Path(p).is_dir()]
-    if (not user_paths) or provided_dirs:
-        dates = _parse_dates_from_text(user_prompt)
-        by_ymd, by_md = _index_db()
-        want = []
-        if dates["ymd"]:
-            for yyyy,mm,dd in dates["ymd"]:
-                want.append((yyyy,mm,dd))
-        elif dates["md"]:
-            if dates["range"] and len(dates["md"]) >= 2:
-                (m1,d1),(m2,d2) = dates["md"][0], dates["md"][1]
-                want += _days_between(m1,d1,m2,d2,year=None)
+    _user_args = sys.argv[2:]
+    _dirs = [p for p in _user_args if Path(p).is_dir()]
+    if (not _user_args) or _dirs:
+        _dates = _parse_dates_from_text(user_prompt)
+        _by_ymd, _by_md = _index_db()
+        _want = []
+        if _dates["ymd"]:
+            for yyyy,mm,dd in _dates["ymd"]:
+                _want.append((yyyy,mm,dd))
+        elif _dates["md"]:
+            if _dates["range"] and len(_dates["md"]) >= 2:
+                (m1,d1),(m2,d2) = _dates["md"][0], _dates["md"][1]
+                _want += _days_between(m1,d1,m2,d2,year=DEFAULT_YEAR)
             else:
-                for mm,dd in dates["md"]:
-                    want.append((None,mm,dd))
-        chosen=[]
-        for y,mm,dd in want:
-            if y is not None and (y,mm,dd) in by_ymd:
-                chosen.append(by_ymd[(y,mm,dd)])
-            elif (mm,dd) in by_md:
-                chosen.append(by_md[(mm,dd)][0][1])
-        chosen = [str(Path(p).resolve()) for p in chosen if p]
-        chosen = list(dict.fromkeys(chosen))
-        if not chosen:
+                for mm,dd in _dates["md"]:
+                    _want.append((DEFAULT_YEAR,mm,dd))  # ASSUME 2025
+        _chosen = []
+        for y,mm,dd in _want:
+            if (y,mm,dd) in _by_ymd:
+                _chosen.append(_by_ymd[(y,mm,dd)])
+            elif (mm,dd) in _by_md:
+                # choose exact DEFAULT_YEAR first if present; else latest year
+                cand = [p for yr,p in _by_md[(mm,dd)] if yr == DEFAULT_YEAR]
+                _chosen.append(cand[0] if cand else _by_md[(mm,dd)][0][1])
+        _chosen = [str(Path(p).resolve()) for p in _chosen if p]
+        _chosen = list(dict.fromkeys(_chosen))
+        if not _chosen:
             print("DB DEBUG — found in /app/db:", ", ".join(f.name for f in DB_DIR.glob("*.csv")) or "(none)")
-            print("DB DEBUG — wanted days:", want)
-            print("DB DEBUG — by_ymd keys:", list(by_ymd.keys())[:10], "…", f"({len(by_ymd)} total)")
-            print("DB DEBUG — by_md keys:",  list(by_md.keys())[:10],  "…", f"({len(by_md)} total)")
+            print("DB DEBUG — wanted days:", _want)
+            print("DB DEBUG — by_ymd keys:", list(_by_ymd.keys())[:10], "…", f"({len(_by_ymd)} total)")
+            print("DB DEBUG — by_md  keys:", list(_by_md.keys())[:10],  "…", f"({len(_by_md)} total)")
             print("Error Report:"); print("No matching CSVs found in db for requested date(s)."); raise SystemExit(1)
-        extra_files = [str(Path(p).resolve()) for p in user_paths if Path(p).is_file()]
-        csv_paths = chosen + extra_files
+        _extra = [str(Path(p).resolve()) for p in _user_args if Path(p).is_file()]
+        csv_paths = _chosen + _extra
         print("SELECTED FROM DB:", ", ".join(Path(p).name for p in csv_paths[:20]))
 
 MINIMAL / LITE MODE
