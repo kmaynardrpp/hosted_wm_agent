@@ -202,6 +202,8 @@ AUTO-SELECT DATED CSVs FROM DB (HYphen FORMAT; ASSUME 2025 IF YEAR OMITTED)
     print("DB DEBUG — by_md  keys:", list(_by_md.keys())[:10],  "…", f"({len(_by_md)} total)")
     print("Error Report:"); print("No matching CSVs found in db for requested date(s)."); raise SystemExit(1)
 
+- Range detection MUST use correct named groups: re.search(r'(?P<a>.+?)\s+(?:to|through|thru|\-|–|—|\.\.|between)\s+(?P<b>.+)', t)
+
 - Reference implementation (drop BEFORE normal csv_paths handling):
 
     from pathlib import Path
@@ -300,6 +302,9 @@ AUTO-SELECT DATED CSVs FROM DB (HYphen FORMAT; ASSUME 2025 IF YEAR OMITTED)
         _extra = [str(Path(p).resolve()) for p in _user_args if Path(p).is_file()]
         csv_paths = _chosen + _extra
         print("SELECTED FROM DB:", ", ".join(Path(p).name for p in csv_paths[:20]))
+
+- Range detection MUST use correct named groups: re.search(r'(?P<a>.+?)\s+(?:to|through|thru|\-|–|—|\.\.|between)\s+(?P<b>.+)', t)
+
 
 MINIMAL / LITE MODE
 - If no data or heavy failure: produce a concise "summary" section only (no tables unless explicitly requested) and build the PDF with `make_lite(report)`.
