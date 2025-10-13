@@ -26,13 +26,13 @@ ENV_MODEL = os.environ.get("OPENAI_MODEL", "").strip()
 REASONING_EFFORT = os.environ.get("IZ_REASONING_EFFORT", os.environ.get("OPENAI_REASONING_EFFORT", "medium")).lower()
 MAX_OUTPUT_TOKENS = int(os.environ.get("IZ_MAX_OUTPUT_TOKENS", os.environ.get("OPENAI_MAX_OUTPUT_TOKENS", "12000")))
 
-# Size caps (to avoid excessively large requests)
-GUIDELINES_CAP = int(os.environ.get("IZ_GUIDELINES_CAP", "0") or "0")   # 0 = no cap
+# Size caps (trim large inputs to improve robustness/speed)
+GUIDELINES_CAP = int(os.environ.get("IZ_GUIDELINES_CAP", "0") or "0")  # 0 = no cap
 CONTEXT_CAP    = int(os.environ.get("IZ_CONTEXT_CAP", "8000"))
 HELPER_CAP     = int(os.environ.get("IZ_HELPER_CAP", "8000"))
 
-TIMEOUT_SEC = int(os.environ.get("RTLS_CODE_TIMEOUT_SEC", "1800"))  # child script timeout
-RUNS_DIR = ".runs"                                                   # where generator writes scripts
+TIMEOUT_SEC = int(os.environ.get("RTLS_CODE_TIMEOUT_SEC", "1800"))
+RUNS_DIR = ".runs"
 
 # ---------- Small helpers ----------
 def now_ts() -> str:
@@ -100,7 +100,6 @@ def build_system_message(project_dir: Path) -> str:
                            max_chars=(GUIDELINES_CAP if GUIDELINES_CAP > 0 else None)).strip()
     if not sys_prompt:
         sys_prompt = "You are a code generator that returns one Python script as a single code block."
-    # Hard, explicit output constraint layer
     sys_prompt += (
         "\n\nOUTPUT FORMAT (MANDATORY): Emit ONLY raw Python source — no prose, no Markdown fences."
         " Begin directly with imports; if you would include fences, OMIT them."
@@ -108,11 +107,9 @@ def build_system_message(project_dir: Path) -> str:
     return sys_prompt
 
 def _cap(n_full: int, trimmed: bool, default_full: int, default_trim: int) -> int:
-    # choose helper/context cap depending on trimmed flag
     return default_trim if trimmed else default_full
 
 def build_user_message(user_prompt: str, csv_paths: List[str], project_dir: Path, trimmed: bool=False) -> str:
-    # include full guidelines and a trimmed context; helper excerpts to ground APIs
     context_cap  = _cap(len(user_prompt), trimmed, CONTEXT_CAP, 4000)
     helper_cap   = _cap(len(user_prompt), trimmed, HELPER_CAP, 4000)
 
@@ -150,7 +147,7 @@ def build_user_message(user_prompt: str, csv_paths: List[str], project_dir: Path
 
     csv_lines = "\n".join(f" - {p}" for p in csv_paths)
 
-    # Big instruction block: aligned with your system/guidelines
+    # INSTR — long but precise; defines DB picker, MAC guard, floorplan, links, etc.
     INSTR = (
         "INSTRUCTIONS (MANDATORY — FOLLOW EXACTLY)\n"
         "-----------------------------------------\n"
@@ -165,7 +162,7 @@ def build_user_message(user_prompt: str, csv_paths: List[str], project_dir: Path
         "  OUT_ENV = os.environ.get('INFOZONE_OUT_DIR', '').strip()\n"
         "  out_dir = Path(OUT_ENV).resolve() if OUT_ENV else (Path(csv_paths[0]).resolve().parent if csv_paths else ROOT)\n"
         "  out_dir.mkdir(parents=True, exist_ok=True)\n"
-        "  LOGO = ROOT / 'redpoint_logo.png'\n"
+        "  LOGO = ROOT / 'redpoint_logo.png'; FLOORJSON = ROOT / 'floorplans.json'\n"
         "\n"
         "MATPLOTLIB ≥3.9 SHIM:\n"
         "  import matplotlib; matplotlib.use('Agg')\n"
@@ -173,73 +170,77 @@ def build_user_message(user_prompt: str, csv_paths: List[str], project_dir: Path
         "  _FCA.tostring_rgb = getattr(_FCA,'tostring_rgb', lambda self: _np.asarray(self.buffer_rgba())[..., :3].tobytes())\n"
         "  import matplotlib as _mpl; _get_cmap = getattr(getattr(_mpl,'colormaps',_mpl),'get_cmap',None)\n"
         "\n"
-        "## --- DB auto-select from ROOT/db (HYphen format; tolerant 1–2 digit month/day) ---\n"
+        "## --- DB auto-select from ROOT/db (HYphen format; tolerant 1–2 digit month/day; inclusive ranges; ASSUME 2025) ---\n"
         "from pathlib import Path as _P\n"
         "import re as _re, datetime as _dt\n"
-        "DB_DIR = ROOT / 'db'\n"
-        "_MONTHS = {m.lower(): i for i,m in enumerate(['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],1)}\n"
-        "_MONTHS.update({m.lower(): i for i,m in enumerate(['January','February','March','April','May','June','July','August','September','October','November','December'],1)})\n"
+        "DB_DIR = ROOT / 'db'; DEFAULT_YEAR = 2025\n"
+        "def _normalize_text(s:str)->str:\n"
+        "    for k,v in {'thru':'through','’':'\\'','–':'-','—':'-'}.items(): s=s.replace(k,v)\n"
+        "    return s\n"
         "def _parse_dates_from_text(txt: str):\n"
-        "    t = txt.lower()\n"
+        "    t = _normalize_text(txt).lower()\n"
         "    ymd = [tuple(map(int, m.groups())) for m in _re.finditer(r'(\\d{4})[-/](\\d{1,2})[-/](\\d{1,2})', t)]\n"
-        "    # Also accept MM-DD-YYYY → normalize to (YYYY,MM,DD)\n"
-        "    for m in _re.finditer(r'(\\d{1,2})[-/](\\d{1,2})[-/](\\d{4})', t):\n"
-        "        ymd.append((int(m.group(3)), int(m.group(1)), int(m.group(2))))\n"
+        "    for m in _re.finditer(r'(\\d{1,2})[-/](\\d{1,2})[-/](\\d{4})', t): ymd.append((int(m.group(3)), int(m.group(1)), int(m.group(2))))\n"
         "    md  = [tuple(map(int, m.groups())) for m in _re.finditer(r'\\b(\\d{1,2})[-/](\\d{1,2})\\b', t)]\n"
         "    for m in _re.finditer(r'\\b([a-z]{3,9})\\s+(\\d{1,2})(?:st|nd|rd|th)?\\b', t):\n"
-        "        mon = _MONTHS.get(m.group(1).lower()); \n"
+        "        _M = {'jan':1,'feb':2,'mar':3,'apr':4,'may':5,'jun':6,'jul':7,'aug':8,'sep':9,'sept':9,'oct':10,'nov':11,'dec':12,\n"
+        "              'january':1,'february':2,'march':3,'april':4,'june':6,'july':7,'august':8,'september':9,'october':10,'november':11,'december':12}\n"
+        "        mon=_M.get(m.group(1).lower());\n"
         "        if mon: md.append((mon, int(m.group(2))))\n"
         "    rng = _re.search(r'(?P<a>.+?)\\s+(?:to|through|thru|\\-|–|—|\\.\\.|between)\\s+(?P<b>.+)', t)\n"
         "    return {'ymd': ymd, 'md': md, 'range': rng is not None}\n"
-        "def _days_between(m1,d1,m2,d2,year=None):\n"
-        "    # If year omitted, caller may fill DEFAULT_YEAR (set in system prompt); default here is 1900 to avoid confusion\n"
-        "    y = year or 1900\n"
-        "    a = _dt.date(y,m1,d1); b = _dt.date(y,m2,d2)\n"
-        "    if b < a: a,b = b,a\n"
-        "    out=[]; cur=a\n"
-        "    for _ in range(370):\n"
-        "        out.append((cur.month, cur.day, (year if year else None)))\n"
-        "        if cur==b: break\n"
-        "        cur += _dt.timedelta(days=1)\n"
-        "    return out\n"
         "R_YYYY = _re.compile(r'(?:positions|postions)_(\\d{4})-(\\d{1,2})-(\\d{1,2})\\.csv$', _re.I)\n"
         "R_MD   = _re.compile(r'(?:positions|postions)_(\\d{1,2})-(\\d{1,2})\\.csv$', _re.I)\n"
         "def _index_db():\n"
-        "    files = list(DB_DIR.glob('*.csv'))\n"
-        "    ymd = {}; md = {}\n"
+        "    files = list(DB_DIR.glob('*.csv')); ymd = {}; md = {}\n"
         "    for f in files:\n"
-        "        n = f.name.lower()\n"
-        "        m = R_YYYY.match(n)\n"
+        "        n=f.name.lower(); m=R_YYYY.match(n)\n"
         "        if m:\n"
-        "            yyyy,mm,dd = map(int, m.groups()); ymd[(yyyy,mm,dd)] = f; md.setdefault((mm,dd), []).append((yyyy,f)); continue\n"
-        "        m = R_MD.match(n)\n"
+        "            yyyy,mm,dd=map(int,m.groups()); ymd[(yyyy,mm,dd)] = f; md.setdefault((mm,dd),[]).append((yyyy,f)); continue\n"
+        "        m=R_MD.match(n)\n"
         "        if m:\n"
-        "            mm,dd = map(int, m.groups()); md.setdefault((mm,dd), []).append((None,f))\n"
+        "            mm,dd=map(int,m.groups()); md.setdefault((mm,dd),[]).append((None,f))\n"
         "    for k in md: md[k].sort(key=lambda t: (t[0] is None, t[0]), reverse=True)\n"
         "    return ymd, md\n"
         "# Only auto-select when user provided no files OR any provided path is a directory\n"
-        "_user_args = sys.argv[2:]\n"
-        "_dirs = [p for p in _user_args if _P(p).is_dir()]\n"
+        "_user_args = sys.argv[2:]; _dirs = [p for p in _user_args if _P(p).is_dir()]\n"
         "if (not _user_args) or _dirs:\n"
-        "    _dates = _parse_dates_from_text(user_prompt)\n"
-        "    _by_ymd, _by_md = _index_db()\n"
-        "    _want = []\n"
+        "    _dates = _parse_dates_from_text(user_prompt); _by_ymd, _by_md = _index_db(); _want = []\n"
         "    if _dates['ymd']:\n"
-        "        for yyyy,mm,dd in _dates['ymd']: _want.append((yyyy,mm,dd))\n"
-        "    elif _dates['md']:\n"
-        "        if _dates['range'] and len(_dates['md']) >= 2:\n"
-        "            (m1,d1),(m2,d2) = _dates['md'][0], _dates['md'][1]; _want += _days_between(m1,d1,m2,d2,year=None)\n"
+        "        _ymd = sorted(_dates['ymd'])\n"
+        "        if len(_ymd)==1: y,m,d=_ymd[0]; _want.append((y,m,d))\n"
         "        else:\n"
-        "            for mm,dd in _dates['md']: _want.append((None,mm,dd))\n"
-        "    _chosen = []\n"
+        "            (y1,m1,d1),(y2,m2,d2) = _ymd[0], _ymd[-1]\n"
+        "            a=_dt.date(y1,m1,d1); b=_dt.date(y2,m2,d2)\n"
+        "            if b<a: a,b=b,a\n"
+        "            cur=a\n"
+        "            for _ in range(400):\n"
+        "                _want.append((cur.year,cur.month,cur.day))\n"
+        "                if cur==b: break\n"
+        "                cur += _dt.timedelta(days=1)\n"
+        "    elif _dates['md']:\n"
+        "        if _dates['range'] and len(_dates['md'])>=2:\n"
+        "            (m1,d1),(m2,d2) = _dates['md'][0], _dates['md'][1]\n"
+        "            y=DEFAULT_YEAR; a=_dt.date(y,m1,d1); b=_dt.date(y,m2,d2)\n"
+        "            if b<a: a,b=b,a\n"
+        "            cur=a\n"
+        "            for _ in range(400):\n"
+        "                _want.append((cur.year,cur.month,cur.day))\n"
+        "                if cur==b: break\n"
+        "                cur += _dt.timedelta(days=1)\n"
+        "        else:\n"
+        "            for mm,dd in _dates['md']: _want.append((DEFAULT_YEAR,mm,dd))\n"
+        "    _chosen=[]\n"
         "    for y,mm,dd in _want:\n"
-        "        if y is not None and (y,mm,dd) in _by_ymd: _chosen.append(_by_ymd[(y,mm,dd)])\n"
-        "        elif (mm,dd) in _by_md: _chosen.append(_by_md[(mm,dd)][0][1])\n"
-        "    _chosen = [str(_P(p).resolve()) for p in _chosen if p]\n"
-        "    _chosen = list(dict.fromkeys(_chosen))\n"
+        "        if (y,mm,dd) in _by_ymd: _chosen.append(_by_ymd[(y,mm,dd)])\n"
+        "        elif (mm,dd) in _by_md:\n"
+        "            cand=[p for yr,p in _by_md[(mm,dd)] if yr==DEFAULT_YEAR]; _chosen.append(cand[0] if cand else _by_md[(mm,dd)][0][1])\n"
+        "    _chosen=[str(_P(p).resolve()) for p in _chosen if p]; _chosen=list(dict.fromkeys(_chosen))\n"
         "    if not _chosen:\n"
+        "        print('DB DEBUG — found in /app/db:', ', '.join(f.name for f in DB_DIR.glob('*.csv')) or '(none)')\n"
+        "        print('DB DEBUG — wanted days:', _want)\n"
         "        print('Error Report:'); print('No matching CSVs found in db for requested date(s).'); raise SystemExit(1)\n"
-        "    _extra = [str(_P(p).resolve()) for p in _user_args if _P(p).is_file()]\n"
+        "    _extra=[str(_P(p).resolve()) for p in _user_args if _P(p).is_file()]\n"
         "    csv_paths = _chosen + _extra\n"
         "    print('SELECTED FROM DB:', ', '.join(_P(p).name for p in csv_paths[:20]))\n"
         "\n"
@@ -253,13 +254,12 @@ def build_user_message(user_prompt: str, csv_paths: List[str], project_dir: Path
         "  import pandas as pd\n"
         "  df = pd.DataFrame(raw.get('rows', []))\n"
         "  if df.columns.duplicated().any(): df = df.loc[:, ~df.columns.duplicated()]\n"
-        "  # NOTE: If GV needs a point ignore instead of a crop, this block should be replaced accordingly in the prompt.\n"
         "  xn = pd.to_numeric(df.get('x',''), errors='coerce'); yn = pd.to_numeric(df.get('y',''), errors='coerce')\n"
-        "  df = df.loc[(xn >= 12000) & (yn >= 15000)].copy()\n"
-        "  # Timestamp canon\n"
+        "  _ix=os.environ.get('IGNORE_X'); _iy=os.environ.get('IGNORE_Y')\n"
+        "  if _ix and _iy: df = df.loc[~((xn == float(_ix)) & (yn == float(_iy)))].copy()\n"
+        "  else: df = df.loc[(xn >= 12000) & (yn >= 15000)].copy()\n"
         "  src = df['ts_iso'] if 'ts_iso' in df.columns else (df['ts'] if 'ts' in df.columns else '')\n"
         "  df['ts_utc'] = pd.to_datetime(src, utc=True, errors='coerce')\n"
-        "  # Required columns check (after first file)\n"
         "  cols = set(df.columns.astype(str))\n"
         "  if not ((('trackable' in cols) or ('trackable_uid' in cols)) and ('trade' in cols) and ('x' in cols) and ('y' in cols)):\n"
         "      print('Error Report:'); print('Missing required columns for analysis.'); print('Columns detected: ' + ','.join(df.columns.astype(str))); raise SystemExit(1)\n"
@@ -268,8 +268,7 @@ def build_user_message(user_prompt: str, csv_paths: List[str], project_dir: Path
         "TIME: Use dt.floor('h'), never 'H'. Use ts_utc for ALL analytics/zones.\n"
         "\n"
         "FIGURES → PNGs → PDF:\n"
-        "  # Save PNGs first (dpi=120), but DO NOT close figures before PDF\n"
-        "  pdf_path = out_dir / f'info_zone_report_{report_date}.pdf'\n"
+        "  pdf_path = out_dir / f'info_zone_report_{now_stamp()}.pdf'\n"
         "  from pdf_creation_script import safe_build_pdf\n"
         "  try:\n"
         "      safe_build_pdf(report, str(pdf_path), logo_path=str(LOGO))\n"
@@ -329,9 +328,9 @@ Return ONE Python script in a single code block and nothing else.
 Requirements:
 - CLI: python generated.py "<USER_PROMPT>" [/abs/csv1 [/abs/csv2 ...]]   # CSVs optional
 - Resolve ROOT from INFOZONE_ROOT or __file__; OUT_DIR = INFOZONE_OUT_DIR or first CSV dir (mkdir -p).
-- If csv_paths is empty or contains directories, parse dates from the prompt and auto-select from ROOT/db using hyphen filenames (positions_YYYY-MM-DD.csv / positions_MM-DD.csv).
-- Import local helpers; save PDF/PNGs to OUT_DIR; print file:/// links exactly.
-- Per-file processing (memory-safe); priority floor crop: keep x>=12000 & y>=15000; use dt.floor("h").
+- If csv_paths is empty or contains directories, parse dates from the prompt and auto-select from ROOT/db using hyphen filenames (positions_YYYY-MM-DD.csv / positions_MM-DD.csv) with inclusive ranges and year=2025 when missing.
+- Import local helpers; save PDF/PNGs to OUT_DIR; print file:/// links exactly (use _print_links).
+- Per-file processing (memory-safe); priority floor filter (crop) or env point-ignore; use dt.floor("h").
 - Default: Summary + Charts; tables only if explicitly requested.
 
 CSV INPUTS:
@@ -376,9 +375,33 @@ def try_models_with_retries(client: OpenAI, models: List[str],
                 if code and not skeletal:
                     print(f"[{now_ts()}] [INFO] Code block OK with model={m} variant={variant}")
                     return m, code
-                # repair attempt (validation-level)
+
+                # -------- Validation-level REPAIR (more explicit) --------
                 print(f"[{now_ts()}] [WARN] Code failed validation ({issues}). Retrying with REPAIR prompt.")
-                repair_prompt = msg + "\n\nREPAIR:\n- Expand to full, production-quality script.\n- Fix: " + "; ".join(issues) + "\n- Return ONE code block only (no fences)."
+                repair_prompt = (
+                    msg
+                    + "\n\nREPAIR-STRUCTURE (MANDATORY):\n"
+                    + "- Keep container-safe ROOT/out_dir and imports exactly.\n"
+                    + "- Include DB auto-select from ROOT/db using HYphen patterns only, with inclusive ranges:\n"
+                    + "  * Accept YYYY-MM-DD, MM-DD-YYYY (normalize), MM-DD/M-D, Month D.\n"
+                    + "  * If a year is omitted, ASSUME 2025; if one endpoint has a year and the other does not, use the same year.\n"
+                    + "  * Expand ranges inclusively; print 'SELECTED FROM DB: ...'.\n"
+                    + "- Include MAC-map audit guard + smoke log; fail fast if mac_map not loaded or mac_hits==0.\n"
+                    + "- Priority floor filter: default crop (x>=12000 & y>=15000), but if IGNORE_X and IGNORE_Y env are set, drop ONLY that exact point instead.\n"
+                    + "- Floorplan selection: use 'selected==1' first; else filename match; else first.\n"
+                    + "- Add regex preflights for the range parser (?P<a>…)(?P<b>…) and hyphen filename regexes.\n"
+                    + "- Add sanity checks for MAC map presence, writable out_dir, and DB directory presence if auto-select is used.\n"
+                    + "- Replace ANY inline link printing with a safe helper:\n"
+                    + "    from pathlib import Path as __P\n"
+                    + "    def _print_links(pdf_path, png_paths):\n"
+                    + "        def file_uri(p): return 'file:///' + str(__P(p).resolve()).replace('\\\\','/')\n"
+                    + "        print(f\"[Download the PDF]({file_uri(pdf_path)})\")\n"
+                    + "        for i,p in enumerate(png_paths or [],1): print(f\"[Download Plot {i}]({file_uri(p)})\")\n"
+                    + "- Keep tables OFF unless explicitly requested; use dt.floor('h'); use ts_utc; no /mnt/data.\n"
+                    + "- Ensure the script compiles with compile(..., 'exec').\n"
+                    + "- Do NOT change behavior beyond these fixes.\n"
+                    + f"- Structural issues to fix: {', '.join(issues)}\n"
+                )
                 raw2 = responses_create_text(client, m, system_msg, repair_prompt)
                 code2 = strip_fences(extract_code_block(raw2))
                 skeletal2, issues2 = code_is_skeletal(code2)
@@ -390,7 +413,7 @@ def try_models_with_retries(client: OpenAI, models: List[str],
                 print(f"[{now_ts()}] [ERROR] Responses call failed (model={m}, variant={variant}): {e}", file=sys.stderr)
                 errors.append(f"{m}/{variant}: {e}")
 
-        # minimal emergency
+        # Minimal emergency prompt
         try:
             raw3 = responses_create_text(client, m, system_msg, user_min)
             code3 = strip_fences(extract_code_block(raw3))
@@ -430,7 +453,7 @@ def generate_and_run(user_prompt: str, csv_paths: List[str], project_dir: Path) 
     print(f"[{now_ts()}] [INFO] Using model: {model_used}")
     print(f"[{now_ts()}] [INFO] Final code length: {len(code_text)} chars")
 
-    # Compile preflight; if it fails, run a targeted SYNTAX repair that enforces safe link printing.
+    # Compile preflight; if it fails, run a targeted SYNTAX repair that enforces safe link printing & range regex.
     try:
         compile(code_text, "<generated>", "exec")
     except SyntaxError as e:
@@ -440,16 +463,19 @@ def generate_and_run(user_prompt: str, csv_paths: List[str], project_dir: Path) 
 
         repair_prompt = (
             user_msg_full
-            + "\n\nREPAIR-SYNTAX:\n"
-            + "- Fix ALL syntax errors so that compile(..., 'exec') succeeds.\n"
-            + "- Replace ANY inline link printing with a safe helper to avoid nested f-string parentheses:\n"
+            + "\n\nREPAIR-SYNTAX (MANDATORY):\n"
+            + "- Fix ALL syntax/name/scope errors so compile(...,'exec') succeeds **without changing the program behavior**.\n"
+            + "- Replace ANY inline link printing with this helper (use it at the end on success only):\n"
             + "    from pathlib import Path as __P\n"
             + "    def _print_links(pdf_path, png_paths):\n"
             + "        def file_uri(p): return 'file:///' + str(__P(p).resolve()).replace('\\\\','/')\n"
             + "        print(f\"[Download the PDF]({file_uri(pdf_path)})\")\n"
-            + "        for i, p in enumerate(png_paths or [], 1): print(f\"[Download Plot {i}]({file_uri(p)})\")\n"
-            + "- Use regex with correct named groups for ranges: (?P<a>...) and (?P<b>...).\n"
-            + f"- Compiler error to fix: {err_msg}\n"
+            + "        for i,p in enumerate(png_paths or [],1): print(f\"[Download Plot {i}]({file_uri(p)})\")\n"
+            + "- Ensure range regex uses correct named groups: (?P<a>...) and (?P<b>...).\n"
+            + "- Keep HYphen DB filename regexes and **inclusive** range expansion; assume year 2025 when omitted.\n"
+            + "- Ensure constants exist: ROOT, LOGO, FLOORJSON, ZONES_JSON, out_dir; no misspellings (e.g., FLOJSON).\n"
+            + "- Avoid utcnow() deprecation: if you need UTC now, use timezone-aware now (datetime.datetime.now(datetime.UTC)).\n"
+            + f"- Compiler error that MUST be fixed: {err_msg}\n"
         )
         raw = responses_create_text(client, model_used, system_msg, repair_prompt)
         code_text = strip_fences(extract_code_block(raw))
@@ -496,7 +522,6 @@ def main():
     args = ap.parse_args()
 
     project_dir = Path(__file__).resolve().parent
-    # Absolute paths for whatever the user supplied; existence checks handled by the generated script
     csv_paths = [str(Path(p).resolve()) for p in (args.csv or [])]
 
     rc = generate_and_run(args.prompt, csv_paths, project_dir)
