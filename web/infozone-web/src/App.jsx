@@ -57,8 +57,9 @@ export default function App() {
     const trimmed = prompt.trim();
     if (!trimmed || busy) return;
 
-    // Clear the chat window for a fresh run
-    setMessages([{ role: "user", text: trimmed }]);
+    // Clear just the input box immediately, keep chat history intact
+    setPrompt("");
+    setMessages((prev) => [...prev, { role: "user", text: trimmed }]);
     setBusy(true);
 
     try {
@@ -93,7 +94,6 @@ export default function App() {
     } finally {
       setBusy(false);
       setElapsed(0);
-      setPrompt("");
       setFiles([]);
       inputRef.current?.focus();
     }
@@ -157,9 +157,7 @@ export default function App() {
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
                 onKeyDown={onKeyDown}
-                placeholder={
-                  busy
-                    ? `⏱ ${formatTime(elapsed)}`
+                placeholder={"Type a prompt… (Shift+Enter for newline)"}`
                     : "Type a prompt… (Shift+Enter for newline)"
                 }
                 className="w-full h-28 resize-none outline-none p-3 rounded-xl bg-gray-50 focus:bg-white"
