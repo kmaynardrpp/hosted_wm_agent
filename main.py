@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# main.py — InfoZone generator/runner (Docker/EC2-ready; GV/GC shared)
+# main.py — InfoZone generator/runner with runtime repair (Docker/EC2-ready; GV/GC shared)
 from __future__ import annotations
 
 import argparse
@@ -30,6 +30,9 @@ MAX_OUTPUT_TOKENS = int(os.environ.get("IZ_MAX_OUTPUT_TOKENS", os.environ.get("O
 GUIDELINES_CAP = int(os.environ.get("IZ_GUIDELINES_CAP", "0") or "0")  # 0 = no cap
 CONTEXT_CAP    = int(os.environ.get("IZ_CONTEXT_CAP", "8000"))
 HELPER_CAP     = int(os.environ.get("IZ_HELPER_CAP", "8000"))
+
+# Repair attempts
+REPAIR_RETRIES = int(os.environ.get("IZ_REPAIR_RETRIES", "3"))
 
 TIMEOUT_SEC = int(os.environ.get("RTLS_CODE_TIMEOUT_SEC", "1800"))
 RUNS_DIR = ".runs"
@@ -94,6 +97,14 @@ def model_supports_reasoning(model: str) -> bool:
     m = (model or "").lower()
     return any(tag in m for tag in ("gpt-5", "o4", "o3", "reasoning", "thinking"))
 
+def _cap(trimmed: bool, full_default: int, trim_default: int) -> int:
+    return trim_default if trimmed else full_default
+
+def _clip(s: str, cap: int) -> str:
+    if cap and len(s) > cap:
+        return s[:cap] + f"\n\n…[truncated to {cap} chars]…"
+    return s
+
 # ---------- Prompt builders ----------
 def build_system_message(project_dir: Path) -> str:
     sys_prompt = read_text(project_dir / "system_prompt.txt",
@@ -106,12 +117,9 @@ def build_system_message(project_dir: Path) -> str:
     )
     return sys_prompt
 
-def _cap(n_full: int, trimmed: bool, default_full: int, default_trim: int) -> int:
-    return default_trim if trimmed else default_full
-
 def build_user_message(user_prompt: str, csv_paths: List[str], project_dir: Path, trimmed: bool=False) -> str:
-    context_cap  = _cap(len(user_prompt), trimmed, CONTEXT_CAP, 4000)
-    helper_cap   = _cap(len(user_prompt), trimmed, HELPER_CAP, 4000)
+    context_cap = _cap(trimmed, CONTEXT_CAP, 4000)
+    helper_cap  = _cap(trimmed, HELPER_CAP, 4000)
 
     guidelines = read_text(project_dir / "guidelines.txt",
                            max_chars=(GUIDELINES_CAP if GUIDELINES_CAP > 0 else None))
@@ -133,21 +141,15 @@ def build_user_message(user_prompt: str, csv_paths: List[str], project_dir: Path
         if txt:
             helper_snips += [f"\n>>> {fname}\n", txt]
 
-    floorplan = None
-    for n in ("floorplan.jpeg", "floorplan.jpg", "floorplan.png"):
-        p = project_dir / n
-        if p.exists():
-            floorplan = p
-            break
+    floorplan = next((project_dir / n for n in ("floorplan.jpeg","floorplan.jpg","floorplan.png") if (project_dir / n).exists()), None)
     assets_lines = "\n".join([
         f" - floorplan.(jpeg|jpg|png) : {'present' if floorplan else 'missing'}",
         f" - redpoint_logo.png : {'present' if (project_dir/'redpoint_logo.png').exists() else 'missing'}",
         f" - trackable_objects.json : {'present' if (project_dir/'trackable_objects.json').exists() else 'missing'}",
     ])
 
-    csv_lines = "\n".join(f" - {p}" for p in csv_paths)
+    csv_lines = "\n".join(f" - {p}" for p in csv_paths) or "(none)"
 
-    # INSTR — long but precise; defines DB picker, MAC guard, floorplan, links, etc.
     INSTR = (
         "INSTRUCTIONS (MANDATORY — FOLLOW EXACTLY)\n"
         "-----------------------------------------\n"
@@ -162,7 +164,7 @@ def build_user_message(user_prompt: str, csv_paths: List[str], project_dir: Path
         "  OUT_ENV = os.environ.get('INFOZONE_OUT_DIR', '').strip()\n"
         "  out_dir = Path(OUT_ENV).resolve() if OUT_ENV else (Path(csv_paths[0]).resolve().parent if csv_paths else ROOT)\n"
         "  out_dir.mkdir(parents=True, exist_ok=True)\n"
-        "  LOGO = ROOT / 'redpoint_logo.png'; FLOORJSON = ROOT / 'floorplans.json'\n"
+        "  LOGO = ROOT / 'redpoint_logo.png'; FLOORJSON = ROOT / 'floorplans.json'; ZONES_JSON = ROOT / 'zones.json'\n"
         "\n"
         "MATPLOTLIB ≥3.9 SHIM:\n"
         "  import matplotlib; matplotlib.use('Agg')\n"
@@ -170,7 +172,7 @@ def build_user_message(user_prompt: str, csv_paths: List[str], project_dir: Path
         "  _FCA.tostring_rgb = getattr(_FCA,'tostring_rgb', lambda self: _np.asarray(self.buffer_rgba())[..., :3].tobytes())\n"
         "  import matplotlib as _mpl; _get_cmap = getattr(getattr(_mpl,'colormaps',_mpl),'get_cmap',None)\n"
         "\n"
-        "## --- DB auto-select from ROOT/db (HYphen format; tolerant 1–2 digit month/day; inclusive ranges; ASSUME 2025) ---\n"
+        "## --- DB auto-select from ROOT/db (HYphen filenames; inclusive ranges; ASSUME 2025 when missing) ---\n"
         "from pathlib import Path as _P\n"
         "import re as _re, datetime as _dt\n"
         "DB_DIR = ROOT / 'db'; DEFAULT_YEAR = 2025\n"
@@ -183,8 +185,8 @@ def build_user_message(user_prompt: str, csv_paths: List[str], project_dir: Path
         "    for m in _re.finditer(r'(\\d{1,2})[-/](\\d{1,2})[-/](\\d{4})', t): ymd.append((int(m.group(3)), int(m.group(1)), int(m.group(2))))\n"
         "    md  = [tuple(map(int, m.groups())) for m in _re.finditer(r'\\b(\\d{1,2})[-/](\\d{1,2})\\b', t)]\n"
         "    for m in _re.finditer(r'\\b([a-z]{3,9})\\s+(\\d{1,2})(?:st|nd|rd|th)?\\b', t):\n"
-        "        _M = {'jan':1,'feb':2,'mar':3,'apr':4,'may':5,'jun':6,'jul':7,'aug':8,'sep':9,'sept':9,'oct':10,'nov':11,'dec':12,\n"
-        "              'january':1,'february':2,'march':3,'april':4,'june':6,'july':7,'august':8,'september':9,'october':10,'november':11,'december':12}\n"
+        "        _M={'jan':1,'feb':2,'mar':3,'apr':4,'may':5,'jun':6,'jul':7,'aug':8,'sep':9,'sept':9,'oct':10,'nov':11,'dec':12,\n"
+        "            'january':1,'february':2,'march':3,'april':4,'june':6,'july':7,'august':8,'september':9,'october':10,'november':11,'december':12}\n"
         "        mon=_M.get(m.group(1).lower());\n"
         "        if mon: md.append((mon, int(m.group(2))))\n"
         "    rng = _re.search(r'(?P<a>.+?)\\s+(?:to|through|thru|\\-|–|—|\\.\\.|between)\\s+(?P<b>.+)', t)\n"
@@ -196,13 +198,12 @@ def build_user_message(user_prompt: str, csv_paths: List[str], project_dir: Path
         "    for f in files:\n"
         "        n=f.name.lower(); m=R_YYYY.match(n)\n"
         "        if m:\n"
-        "            yyyy,mm,dd=map(int,m.groups()); ymd[(yyyy,mm,dd)] = f; md.setdefault((mm,dd),[]).append((yyyy,f)); continue\n"
+        "            yyyy,mm,dd=map(int,m.groups()); ymd[(yyyy,mm,dd)]=f; md.setdefault((mm,dd),[]).append((yyyy,f)); continue\n"
         "        m=R_MD.match(n)\n"
         "        if m:\n"
         "            mm,dd=map(int,m.groups()); md.setdefault((mm,dd),[]).append((None,f))\n"
         "    for k in md: md[k].sort(key=lambda t: (t[0] is None, t[0]), reverse=True)\n"
         "    return ymd, md\n"
-        "# Only auto-select when user provided no files OR any provided path is a directory\n"
         "_user_args = sys.argv[2:]; _dirs = [p for p in _user_args if _P(p).is_dir()]\n"
         "if (not _user_args) or _dirs:\n"
         "    _dates = _parse_dates_from_text(user_prompt); _by_ymd, _by_md = _index_db(); _want = []\n"
@@ -255,9 +256,8 @@ def build_user_message(user_prompt: str, csv_paths: List[str], project_dir: Path
         "  df = pd.DataFrame(raw.get('rows', []))\n"
         "  if df.columns.duplicated().any(): df = df.loc[:, ~df.columns.duplicated()]\n"
         "  xn = pd.to_numeric(df.get('x',''), errors='coerce'); yn = pd.to_numeric(df.get('y',''), errors='coerce')\n"
-        "  _ix=os.environ.get('IGNORE_X'); _iy=os.environ.get('IGNORE_Y')\n"
-        "  if _ix and _iy: df = df.loc[~((xn == float(_ix)) & (yn == float(_iy)))].copy()\n"
-        "  else: df = df.loc[(xn >= 12000) & (yn >= 15000)].copy()\n"
+        "  # GV POINT IGNORE\n"
+        "  df = df.loc[~((xn == 5818) & (yn == 2877))].copy()\n"
         "  src = df['ts_iso'] if 'ts_iso' in df.columns else (df['ts'] if 'ts' in df.columns else '')\n"
         "  df['ts_utc'] = pd.to_datetime(src, utc=True, errors='coerce')\n"
         "  cols = set(df.columns.astype(str))\n"
@@ -307,7 +307,7 @@ def build_user_message(user_prompt: str, csv_paths: List[str], project_dir: Path
         "",
         "MANDATORY RULES (guidelines.txt — full text)",
         "--------------------------------------------",
-        guidelines if not trimmed else guidelines[:4000],
+        (guidelines if GUIDELINES_CAP == 0 else (guidelines[:GUIDELINES_CAP] if guidelines else "")),
         "",
         "BACKGROUND CONTEXT (excerpt)",
         "----------------------------",
@@ -316,8 +316,10 @@ def build_user_message(user_prompt: str, csv_paths: List[str], project_dir: Path
         "HELPER EXCERPTS (READ-ONLY; use these APIs — do NOT re-implement)",
         "-----------------------------------------------------------------",
     ]
-    parts += helper_snips
-    parts += ["", INSTR]
+    for s in helper_snips:
+        parts.append(s)
+    parts.append("")
+    parts.append(INSTR)
     return "\n".join(parts)
 
 def build_minimal_user_message(user_prompt: str, csv_paths: List[str]) -> str:
@@ -328,16 +330,15 @@ Return ONE Python script in a single code block and nothing else.
 Requirements:
 - CLI: python generated.py "<USER_PROMPT>" [/abs/csv1 [/abs/csv2 ...]]   # CSVs optional
 - Resolve ROOT from INFOZONE_ROOT or __file__; OUT_DIR = INFOZONE_OUT_DIR or first CSV dir (mkdir -p).
-- If csv_paths is empty or contains directories, parse dates from the prompt and auto-select from ROOT/db using hyphen filenames (positions_YYYY-MM-DD.csv / positions_MM-DD.csv) with inclusive ranges and year=2025 when missing.
+- If csv_paths is empty or contains directories, parse dates from the prompt and auto-select from ROOT/db using hyphen filenames with inclusive ranges and year=2025 when missing.
 - Import local helpers; save PDF/PNGs to OUT_DIR; print file:/// links exactly (use _print_links).
-- Per-file processing (memory-safe); priority floor filter (crop) or env point-ignore; use dt.floor("h").
-- Default: Summary + Charts; tables only if explicitly requested.
+- Per-file processing; GV point-ignore (x==5818 & y==2877); use dt.floor("h"); tables only if explicitly requested.
 
 CSV INPUTS:
 {csv_lines}
 """.strip()
 
-# ---------- Responses API ----------
+# ---------- OpenAI call ----------
 def responses_create_text(client: OpenAI, model: str, system_msg: str, user_msg: str) -> str:
     print(f"[{now_ts()}] [DEBUG] Calling Responses.create with model={model}")
     print(f"[{now_ts()}] [DEBUG] System chars: {len(system_msg)} | User chars: {len(user_msg)}")
@@ -363,6 +364,7 @@ def responses_create_text(client: OpenAI, model: str, system_msg: str, user_msg:
     print(f"[{now_ts()}] [DEBUG] Raw response length: {len(raw)}")
     return raw
 
+# ---------- Generate / Compile / Run / Repair ----------
 def try_models_with_retries(client: OpenAI, models: List[str],
                             system_msg: str, user_full: str, user_trimmed: str, user_min: str) -> Tuple[str, str]:
     errors: List[str] = []
@@ -376,30 +378,15 @@ def try_models_with_retries(client: OpenAI, models: List[str],
                     print(f"[{now_ts()}] [INFO] Code block OK with model={m} variant={variant}")
                     return m, code
 
-                # -------- Validation-level REPAIR (more explicit) --------
                 print(f"[{now_ts()}] [WARN] Code failed validation ({issues}). Retrying with REPAIR prompt.")
                 repair_prompt = (
                     msg
                     + "\n\nREPAIR-STRUCTURE (MANDATORY):\n"
-                    + "- Keep container-safe ROOT/out_dir and imports exactly.\n"
-                    + "- Include DB auto-select from ROOT/db using HYphen patterns only, with inclusive ranges:\n"
-                    + "  * Accept YYYY-MM-DD, MM-DD-YYYY (normalize), MM-DD/M-D, Month D.\n"
-                    + "  * If a year is omitted, ASSUME 2025; if one endpoint has a year and the other does not, use the same year.\n"
-                    + "  * Expand ranges inclusively; print 'SELECTED FROM DB: ...'.\n"
+                    + "- Keep ROOT/out_dir/imports. Use DB auto-select (hyphen patterns), inclusive ranges, assume 2025; print 'SELECTED FROM DB:'.\n"
                     + "- Include MAC-map audit guard + smoke log; fail fast if mac_map not loaded or mac_hits==0.\n"
-                    + "- Priority floor filter: default crop (x>=12000 & y>=15000), but if IGNORE_X and IGNORE_Y env are set, drop ONLY that exact point instead.\n"
-                    + "- Floorplan selection: use 'selected==1' first; else filename match; else first.\n"
-                    + "- Add regex preflights for the range parser (?P<a>…)(?P<b>…) and hyphen filename regexes.\n"
-                    + "- Add sanity checks for MAC map presence, writable out_dir, and DB directory presence if auto-select is used.\n"
-                    + "- Replace ANY inline link printing with a safe helper:\n"
-                    + "    from pathlib import Path as __P\n"
-                    + "    def _print_links(pdf_path, png_paths):\n"
-                    + "        def file_uri(p): return 'file:///' + str(__P(p).resolve()).replace('\\\\','/')\n"
-                    + "        print(f\"[Download the PDF]({file_uri(pdf_path)})\")\n"
-                    + "        for i,p in enumerate(png_paths or [],1): print(f\"[Download Plot {i}]({file_uri(p)})\")\n"
-                    + "- Keep tables OFF unless explicitly requested; use dt.floor('h'); use ts_utc; no /mnt/data.\n"
-                    + "- Ensure the script compiles with compile(..., 'exec').\n"
-                    + "- Do NOT change behavior beyond these fixes.\n"
+                    + "- GV point-ignore (x==5818 & y==2877); use ts_utc; dt.floor('h'); tables OFF by default.\n"
+                    + "- Floorplan 'selected==1' selection; regex preflights; asset/DB sanity; safe _print_links.\n"
+                    + "- Ensure the script compiles with compile(...,'exec').\n"
                     + f"- Structural issues to fix: {', '.join(issues)}\n"
                 )
                 raw2 = responses_create_text(client, m, system_msg, repair_prompt)
@@ -413,7 +400,6 @@ def try_models_with_retries(client: OpenAI, models: List[str],
                 print(f"[{now_ts()}] [ERROR] Responses call failed (model={m}, variant={variant}): {e}", file=sys.stderr)
                 errors.append(f"{m}/{variant}: {e}")
 
-        # Minimal emergency prompt
         try:
             raw3 = responses_create_text(client, m, system_msg, user_min)
             code3 = strip_fences(extract_code_block(raw3))
@@ -428,7 +414,107 @@ def try_models_with_retries(client: OpenAI, models: List[str],
 
     raise RuntimeError("All model attempts failed. Last errors:\n" + "\n".join(errors))
 
-# ---------- generate + run ----------
+def compile_or_repair_syntax(client: OpenAI, model: str, system_msg: str, user_msg_full: str, code_text: str) -> Tuple[bool, str]:
+    try:
+        compile(code_text, "<generated>", "exec")
+        return True, code_text
+    except SyntaxError as e:
+        err_line = (e.text or "").strip()
+        err_msg  = f"{e.msg} at line {e.lineno}: {err_line}"
+        print(f"[{now_ts()}] [ERROR] Compile failed: {err_msg}", file=sys.stderr)
+
+        repair_prompt = (
+            user_msg_full
+            + "\n\nREPAIR-SYNTAX (TOP PRIORITY: FIX THE PYTHON SCRIPT):\n"
+            + "- Fix ALL syntax/name/scope errors so compile(...,'exec') succeeds WITHOUT changing behavior.\n"
+            + "- Replace ANY inline link printing with safe helper _print_links (avoid nested f-strings).\n"
+            + "- Use correct named regex groups (?P<a>) and (?P<b>) for range parsing; keep hyphen DB patterns & inclusive ranges; assume 2025 if needed.\n"
+            + "- Ensure constants exist (ROOT, LOGO, FLOORJSON, ZONES_JSON, out_dir). No misspellings.\n"
+            + "- Avoid utcnow() deprecation (use timezone-aware now if needed).\n"
+            + f"- Compiler error to fix: {err_msg}\n"
+        )
+        raw = responses_create_text(client, model, system_msg, repair_prompt)
+        fixed = strip_fences(extract_code_block(raw))
+        try:
+            compile(fixed, "<generated>", "exec")
+            return True, fixed
+        except SyntaxError as e2:
+            print(f"[{now_ts()}] [ERROR] Compile failed again: {e2.msg} at line {e2.lineno}: {e2.text}", file=sys.stderr)
+            return False, fixed
+
+def run_script(script_path: Path, user_prompt: str, csv_paths: List[str], project_dir: Path) -> Tuple[int, str, str]:
+    cmd = [sys.executable, str(script_path), user_prompt] + csv_paths
+    print(f"[{now_ts()}] [INFO] Executing generated code:\n$ {' '.join(cmd)}\n(CWD) {project_dir}\n", flush=True)
+    env = os.environ.copy()
+    env["PYTHONPATH"]    = str(project_dir) + os.pathsep + env.get("PYTHONPATH", "")
+    env["INFOZONE_ROOT"] = str(project_dir)
+    proc = subprocess.run(cmd, cwd=str(project_dir), env=env,
+                          stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                          text=True, timeout=TIMEOUT_SEC)
+    return proc.returncode, proc.stdout or "", proc.stderr or ""
+
+def runtime_repair_loop(client: OpenAI, model: str, system_msg: str, user_msg_full: str,
+                        code_text: str, project_dir: Path, user_prompt: str, csv_paths: List[str]) -> Tuple[int, str, str]:
+    """
+    Try to run the script; if it fails (non-zero exit), ask model to FIX the Python script.
+    Up to REPAIR_RETRIES attempts.
+    """
+    runs_dir = project_dir / RUNS_DIR
+    ensure_dir(runs_dir)
+
+    for attempt in range(1, REPAIR_RETRIES + 1):
+        script_path = runs_dir / f"rtls_run_{now_stamp()}.py"
+        script_path.write_text(code_text, encoding="utf-8")
+        print(f"[{now_ts()}] [INFO] Wrote generated script to {script_path}")
+
+        rc, out, err = run_script(script_path, user_prompt, csv_paths, project_dir)
+        if rc == 0:
+            return rc, out, err
+
+        # Build a targeted repair prompt with full context
+        print(f"[{now_ts()}] [WARN] Script exited rc={rc}. Attempting runtime repair ({attempt}/{REPAIR_RETRIES}).")
+        failed_code = script_path.read_text(encoding="utf-8", errors="ignore")
+        # Cap very large payloads
+        cap_code = int(os.environ.get("IZ_REPAIR_CODE_CAP", "40000"))
+        cap_log  = int(os.environ.get("IZ_REPAIR_LOG_CAP", "20000"))
+        failed_code_c = _clip(failed_code, cap_code)
+        out_c = _clip(out, cap_log)
+        err_c = _clip(err, cap_log)
+
+        repair_msg = (
+            user_msg_full
+            + "\n\n=== MAIN PRIORITY: FIX THE PYTHON SCRIPT ===\n"
+            + "The following Python script failed at runtime. Do NOT change the scope or outputs; ONLY fix the code so it runs end-to-end.\n"
+            + "- Keep DB auto-select (hyphen filenames), inclusive ranges, assume 2025 when missing years.\n"
+            + "- Keep MAC-map audit guard + smoke log; keep floor filter / point-ignore exactly as specified.\n"
+            + "- Use safe _print_links; correct named regex groups (?P<a>)(?P<b>); avoid utcnow() deprecation.\n"
+            + "- If a NameError came from mis-typed variables in comprehensions (e.g., zone vs z), replace with an explicit helper.\n"
+            + "- Ensure constants exist (ROOT, LOGO, FLOORJSON, ZONES_JSON, out_dir) and are correctly referenced.\n"
+            + "\n--- EXIT CODE ---\n"
+            + f"{rc}\n"
+            + "\n--- STDERR (capped) ---\n"
+            + f"{err_c}\n"
+            + "\n--- STDOUT (capped) ---\n"
+            + f"{out_c}\n"
+            + "\n--- CURRENT SCRIPT (capped) ---\n"
+            + failed_code_c
+        )
+
+        raw = responses_create_text(client, model, system_msg, repair_msg)
+        code_text = strip_fences(extract_code_block(raw))
+
+        ok, code_text = compile_or_repair_syntax(client, model, system_msg, user_msg_full, code_text)
+        if not ok:
+            # If syntax still broken after a compile repair, continue loop for another try
+            continue
+
+    # After retries, write last attempt for debugging and return failure
+    last_path = (project_dir / RUNS_DIR / f"rtls_run_{now_stamp()}_last.py")
+    last_path.write_text(code_text, encoding="utf-8")
+    print(f"[{now_ts()}] [ERROR] Exhausted runtime repair attempts. Last script saved to {last_path}", file=sys.stderr)
+    return 1, "", "Runtime repair attempts exhausted."
+
+# ---------- Orchestration ----------
 def generate_and_run(user_prompt: str, csv_paths: List[str], project_dir: Path) -> int:
     api_key = os.environ.get("OPENAI_API_KEY")
     if not api_key:
@@ -441,6 +527,7 @@ def generate_and_run(user_prompt: str, csv_paths: List[str], project_dir: Path) 
     user_msg_trimmed = build_user_message(user_prompt, csv_paths, project_dir, trimmed=True)
     user_msg_minimal = build_minimal_user_message(user_prompt, csv_paths)
 
+    # Model order
     model_list: List[str] = []
     if ENV_MODEL:
         model_list.append(ENV_MODEL)
@@ -449,76 +536,31 @@ def generate_and_run(user_prompt: str, csv_paths: List[str], project_dir: Path) 
     model_list += [m for m in FALLBACK_MODELS if m not in model_list]
     print(f"[{now_ts()}] [INFO] Model preference order: {model_list}")
 
+    # First pass: generate code (with structural validation & minimal fallback)
     model_used, code_text = try_models_with_retries(client, model_list, system_msg, user_msg_full, user_msg_trimmed, user_msg_minimal)
     print(f"[{now_ts()}] [INFO] Using model: {model_used}")
     print(f"[{now_ts()}] [INFO] Final code length: {len(code_text)} chars")
 
-    # Compile preflight; if it fails, run a targeted SYNTAX repair that enforces safe link printing & range regex.
-    try:
-        compile(code_text, "<generated>", "exec")
-    except SyntaxError as e:
-        err_line = (e.text or "").strip()
-        err_msg  = f"{e.msg} at line {e.lineno}: {err_line}"
-        print(f"[{now_ts()}] [ERROR] Compile failed: {err_msg}", file=sys.stderr)
+    # Compile or perform syntax repair once
+    ok, code_text = compile_or_repair_syntax(client, model_used, system_msg, user_msg_full, code_text)
+    if not ok:
+        return 4
 
-        repair_prompt = (
-            user_msg_full
-            + "\n\nREPAIR-SYNTAX (MANDATORY):\n"
-            + "- Fix ALL syntax/name/scope errors so compile(...,'exec') succeeds **without changing the program behavior**.\n"
-            + "- Replace ANY inline link printing with this helper (use it at the end on success only):\n"
-            + "    from pathlib import Path as __P\n"
-            + "    def _print_links(pdf_path, png_paths):\n"
-            + "        def file_uri(p): return 'file:///' + str(__P(p).resolve()).replace('\\\\','/')\n"
-            + "        print(f\"[Download the PDF]({file_uri(pdf_path)})\")\n"
-            + "        for i,p in enumerate(png_paths or [],1): print(f\"[Download Plot {i}]({file_uri(p)})\")\n"
-            + "- Ensure range regex uses correct named groups: (?P<a>...) and (?P<b>...).\n"
-            + "- Keep HYphen DB filename regexes and **inclusive** range expansion; assume year 2025 when omitted.\n"
-            + "- Ensure constants exist: ROOT, LOGO, FLOORJSON, ZONES_JSON, out_dir; no misspellings (e.g., FLOJSON).\n"
-            + "- Avoid utcnow() deprecation: if you need UTC now, use timezone-aware now (datetime.datetime.now(datetime.UTC)).\n"
-            + f"- Compiler error that MUST be fixed: {err_msg}\n"
-        )
-        raw = responses_create_text(client, model_used, system_msg, repair_prompt)
-        code_text = strip_fences(extract_code_block(raw))
-        try:
-            compile(code_text, "<generated>", "exec")
-        except SyntaxError as e2:
-            print(f"[{now_ts()}] [ERROR] Compile failed again: {e2.msg} at line {e2.lineno}: {e2.text}", file=sys.stderr)
-            return 4
+    # Runtime: run; if it fails, enter runtime repair loop (up to REPAIR_RETRIES)
+    rc, out, err = runtime_repair_loop(client, model_used, system_msg, user_msg_full, code_text, project_dir, user_prompt, csv_paths)
 
-    # Write & run
-    runs_dir = project_dir / RUNS_DIR
-    ensure_dir(runs_dir)
-    script_path = runs_dir / f"rtls_run_{now_stamp()}.py"
-    script_path.write_text(code_text, encoding="utf-8")
-    print(f"[{now_ts()}] [INFO] Wrote generated script to {script_path}")
-
-    # Execute with project root on PYTHONPATH and INFOZONE_ROOT; pass through INFOZONE_OUT_DIR if set by server/runner
-    cmd = [sys.executable, str(script_path), user_prompt] + csv_paths
-    print(f"[{now_ts()}] [INFO] Executing generated code:\n$ {' '.join(cmd)}\n(CWD) {project_dir}\n", flush=True)
-
-    env = os.environ.copy()
-    env["PYTHONPATH"]    = str(project_dir) + os.pathsep + env.get("PYTHONPATH", "")
-    env["INFOZONE_ROOT"] = str(project_dir)
-
-    proc = subprocess.run(
-        cmd, cwd=str(project_dir), env=env,
-        stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-        text=True, timeout=TIMEOUT_SEC
-    )
-
-    if proc.stdout:
-        print(proc.stdout, end="")
-    if proc.stderr:
-        print(proc.stderr, file=sys.stderr, end="")
-
-    return proc.returncode
+    # Pass through child output
+    if out:
+        print(out, end="")
+    if err:
+        print(err, file=sys.stderr, end="")
+    return rc
 
 # ---------- CLI ----------
 def main():
-    ap = argparse.ArgumentParser(description="Generate analysis code and execute locally (container-safe paths).")
+    ap = argparse.ArgumentParser(description="Generate analysis code and execute locally (container-safe paths) with runtime repair.")
     ap.add_argument("prompt", help="User prompt for the analysis (quoted)")
-    # CSVs optional (files or directories) — DB auto-select is embedded in the generated script
-    ap.add_argument("csv", nargs="*", help="CSV path(s) or directories")
+    ap.add_argument("csv", nargs="*", help="CSV path(s) or directories (optional; DB auto-select will parse dates from the prompt)")
     args = ap.parse_args()
 
     project_dir = Path(__file__).resolve().parent
