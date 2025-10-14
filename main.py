@@ -257,7 +257,7 @@ def build_user_message(user_prompt: str, csv_paths: List[str], project_dir: Path
         "  if df.columns.duplicated().any(): df = df.loc[:, ~df.columns.duplicated()]\n"
         "  xn = pd.to_numeric(df.get('x',''), errors='coerce'); yn = pd.to_numeric(df.get('y',''), errors='coerce')\n"
         "  # GV POINT IGNORE\n"
-        "  df = df.loc[~((xn == 5818) & (yn == 2877))].copy()\n"
+        "  df = df.loc[(xn >= 12000) & (yn >= 15000)].copy()\n"
         "  src = df['ts_iso'] if 'ts_iso' in df.columns else (df['ts'] if 'ts' in df.columns else '')\n"
         "  df['ts_utc'] = pd.to_datetime(src, utc=True, errors='coerce')\n"
         "  cols = set(df.columns.astype(str))\n"
@@ -332,7 +332,7 @@ Requirements:
 - Resolve ROOT from INFOZONE_ROOT or __file__; OUT_DIR = INFOZONE_OUT_DIR or first CSV dir (mkdir -p).
 - If csv_paths is empty or contains directories, parse dates from the prompt and auto-select from ROOT/db using hyphen filenames with inclusive ranges and year=2025 when missing.
 - Import local helpers; save PDF/PNGs to OUT_DIR; print file:/// links exactly (use _print_links).
-- Per-file processing; GV point-ignore (x==5818 & y==2877); use dt.floor("h"); tables only if explicitly requested.
+- Per-file processing; - Priority floor filter: default crop (x>=12000 & y>=15000), but if IGNORE_X and IGNORE_Y env are set, drop ONLY that exact point instead."
 
 CSV INPUTS:
 {csv_lines}
@@ -384,7 +384,7 @@ def try_models_with_retries(client: OpenAI, models: List[str],
                     + "\n\nREPAIR-STRUCTURE (MANDATORY):\n"
                     + "- Keep ROOT/out_dir/imports. Use DB auto-select (hyphen patterns), inclusive ranges, assume 2025; print 'SELECTED FROM DB:'.\n"
                     + "- Include MAC-map audit guard + smoke log; fail fast if mac_map not loaded or mac_hits==0.\n"
-                    + "- GV point-ignore (x==5818 & y==2877); use ts_utc; dt.floor('h'); tables OFF by default.\n"
+                    + "- Priority floor filter: default crop (x>=12000 & y>=15000), but if IGNORE_X and IGNORE_Y env are set, drop ONLY that exact point instead.\n"
                     + "- Floorplan 'selected==1' selection; regex preflights; asset/DB sanity; safe _print_links.\n"
                     + "- Ensure the script compiles with compile(...,'exec').\n"
                     + f"- Structural issues to fix: {', '.join(issues)}\n"
