@@ -157,9 +157,7 @@ export default function App() {
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
                 onKeyDown={onKeyDown}
-                placeholder={"Type a prompt… (Shift+Enter for newline)"}`
-                    : "Type a prompt… (Shift+Enter for newline)"
-                }
+                placeholder="Type a prompt… (Shift+Enter for newline)"
                 className="w-full h-28 resize-none outline-none p-3 rounded-xl bg-gray-50 focus:bg-white"
                 disabled={busy}
               />
