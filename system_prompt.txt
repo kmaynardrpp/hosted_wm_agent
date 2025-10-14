@@ -1,4 +1,4 @@
-# system_prompt.txt (drop-in, full)
+# system_prompt.txt (GC — drop-in, full)
 
 (ONE user-visible execution in Analysis ONLY — zero tolerance)
 
@@ -85,18 +85,13 @@ INGEST (ONLY PATH) + MAC MAP (MANDATORY) + AUDIT GUARD
     if df.columns.duplicated().any():
         df = df.loc[:, ~df.columns.duplicated()]
 
-PRIORITY FLOOR FILTER
-- Default rule (global crop): KEEP ONLY rows with **x ≥ 12,000** AND **y ≥ 15,000** (world mm).
-- OVERRIDE (single-point ignore via env): if `IGNORE_X` AND `IGNORE_Y` are set, then drop ONLY the exact point (x==IGNORE_X AND y==IGNORE_Y) and DO NOT apply the crop.
-- Implement immediately after build of each per-file DataFrame and before any aggregation:
+PRIORITY FLOOR FILTER (GC)
+- KEEP ONLY rows with **x ≥ 12,000** AND **y ≥ 15,000** (world mm).
+- Apply immediately after DataFrame build and before any aggregation/plots/zones:
 
     xn = pd.to_numeric(df.get("x", ""), errors="coerce")
     yn = pd.to_numeric(df.get("y", ""), errors="coerce")
-    _ix = os.environ.get("IGNORE_X"); _iy = os.environ.get("IGNORE_Y")
-    if _ix and _iy:
-        df = df.loc[~((xn == float(_ix)) & (yn == float(_iy)))].copy()
-    else:
-        df = df.loc[(xn >= 12000) & (yn >= 15000)].copy()
+    df = df.loc[(xn >= 12000) & (yn >= 15000)].copy()
 
 TIME (CANONICAL)
 - Create one analysis column:
@@ -167,19 +162,17 @@ AUTO-SELECT DATED CSVs FROM DB (HYphen FORMAT; ASSUME 2025 IF YEAR OMITTED)
 - DATE PARSER (MANDATORY FORMATS):
   • YYYY-MM-DD
   • MM-DD-YYYY (normalize to (YYYY,MM,DD))
-  • MM-DD / M-D  (ASSUME YEAR **2025** if omitted)
-  • Month D / Mon D (optional st/nd/rd/th)  (ASSUME YEAR **2025** if omitted)
+  • MM-DD / M-D  (**ASSUME YEAR 2025** if omitted)
+  • Month D / Mon D (optional st/nd/rd/th)  (**ASSUME YEAR 2025** if omitted)
 - RANGE PARSING: accept “to”, “through”, “thru”, “-”, “–”, “—”, “..”, and “between X and Y”; include all days **inclusive**.
-- MIXED ENDPOINTS: if one endpoint includes a year and the other does not, ASSUME the same year for the missing side; if neither includes a year, ASSUME **2025**.
+- MIXED ENDPOINTS: if one endpoint includes a year and the other does not, **ASSUME the same year** for the missing side; if neither includes a year, **ASSUME 2025**.
 - SELECTION PRIORITY per day:
     1) positions_YYYY-MM-DD.csv
-    2) positions_MM-DD.csv (used when the prompt omitted the year; ASSUME **2025** when choosing among years)
+    2) positions_MM-DD.csv (used when the prompt omitted the year; choose year 2025 first if multiple years exist)
 - On failure (no matches), print a short DB debug then exit(1):
 
     print("DB DEBUG — found in /app/db:", ", ".join(f.name for f in DB_DIR.glob("*.csv")) or "(none)")
     print("DB DEBUG — wanted days:", _want)
-    print("DB DEBUG — by_ymd keys:", list(_by_ymd.keys())[:10], "…", f"({len(_by_ymd)} total)")
-    print("DB DEBUG — by_md  keys:", list(_by_md.keys())[:10],  "…", f"({len(_by_md)} total)")
     print("Error Report:"); print("No matching CSVs found in db for requested date(s)."); raise SystemExit(1)
 
 - Reference implementation (drop BEFORE normal csv_paths handling):
@@ -188,16 +181,10 @@ AUTO-SELECT DATED CSVs FROM DB (HYphen FORMAT; ASSUME 2025 IF YEAR OMITTED)
     import re, datetime as _dt, os
 
     DB_DIR = ROOT / "db"
-    DEFAULT_YEAR = 2025  # ASSUME 2025 UNLESS PROMPT SPECIFIES A YEAR
+    DEFAULT_YEAR = 2025  # ASSUME 2025 unless a year is stated
 
-    _MONTHS = {m.lower(): i for i,m in enumerate(
-      ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],1)}
-    _MONTHS.update({m.lower(): i for i,m in enumerate(
-      ['January','February','March','April','May','June','July','August','September','October','November','December'],1)})
-
-    # normalize common tokens in the prompt before regex
     def _normalize_text(s: str) -> str:
-        for k,v in {"thru":"through", "’":"'","–":"-","—":"-"}.items():
+        for k,v in {"thru":"through","’":"'", "–":"-", "—":"-"}.items():
             s = s.replace(k, v)
         return s
 
@@ -205,13 +192,14 @@ AUTO-SELECT DATED CSVs FROM DB (HYphen FORMAT; ASSUME 2025 IF YEAR OMITTED)
         t = _normalize_text(txt).lower()
         ymd = [tuple(map(int, m.groups()))
                for m in re.finditer(r'(\d{4})[-/](\d{1,2})[-/](\d{1,2})', t)]
-        # MM-DD-YYYY → normalize to (YYYY,MM,DD)
         for m in re.finditer(r'(\d{1,2})[-/](\d{1,2})[-/](\d{4})', t):
             ymd.append((int(m.group(3)), int(m.group(1)), int(m.group(2))))
         md  = [tuple(map(int, m.groups()))
                for m in re.finditer(r'\b(\d{1,2})[-/](\d{1,2})\b', t)]
         for m in re.finditer(r'\b([a-z]{3,9})\s+(\d{1,2})(?:st|nd|rd|th)?\b', t):
-            mon = _MONTHS.get(m.group(1).lower())
+            _M = {'jan':1,'feb':2,'mar':3,'apr':4,'may':5,'jun':6,'jul':7,'aug':8,'sep':9,'sept':9,'oct':10,'nov':11,'dec':12,
+                  'january':1,'february':2,'march':3,'april':4,'june':6,'july':7,'august':8,'september':9,'october':10,'november':11,'december':12}
+            mon = _M.get(m.group(1).lower())
             if mon: md.append((mon, int(m.group(2))))
         rng = re.search(r'(?P<a>.+?)\s+(?:to|through|thru|\-|–|—|\.\.|between)\s+(?P<b>.+)', t)
         return {"ymd": ymd, "md": md, "range": rng is not None}
@@ -257,17 +245,16 @@ AUTO-SELECT DATED CSVs FROM DB (HYphen FORMAT; ASSUME 2025 IF YEAR OMITTED)
         _by_ymd, _by_md = _index_db()
         _want = []
         if _dates["ymd"]:
-            # EXPAND inclusive between min & max endpoints
             _ymd = sorted(_dates["ymd"])
             if len(_ymd) == 1:
-                _y,_m,_d = _ymd[0]; _want.append((_y,_m,_d))
+                y,m,d = _ymd[0]; _want.append((y,m,d))
             else:
                 (y1,m1,d1),(y2,m2,d2) = _ymd[0], _ymd[-1]
                 a = _dt.date(y1,m1,d1); b = _dt.date(y2,m2,d2)
                 if b < a: a,b = b,a
                 cur = a
                 for _ in range(400):
-                    _want.append((cur.year, cur.month, cur.day))
+                    _want.append((cur.year,cur.month,cur.day))
                     if cur == b: break
                     cur += _dt.timedelta(days=1)
         elif _dates["md"]:
@@ -276,14 +263,13 @@ AUTO-SELECT DATED CSVs FROM DB (HYphen FORMAT; ASSUME 2025 IF YEAR OMITTED)
                 _want += _days_between(m1,d1,m2,d2,year=DEFAULT_YEAR)
             else:
                 for mm,dd in _dates["md"]:
-                    _want.append((DEFAULT_YEAR,mm,dd))  # ASSUME 2025
+                    _want.append((DEFAULT_YEAR,mm,dd))
 
         _chosen = []
         for y,mm,dd in _want:
             if (y,mm,dd) in _by_ymd:
                 _chosen.append(_by_ymd[(y,mm,dd)])
             elif (mm,dd) in _by_md:
-                # choose exact DEFAULT_YEAR first if present; else latest year
                 cand = [p for yr,p in _by_md[(mm,dd)] if yr == DEFAULT_YEAR]
                 _chosen.append(cand[0] if cand else _by_md[(mm,dd)][0][1])
         _chosen = [str(Path(p).resolve()) for p in _chosen if p]
@@ -291,17 +277,28 @@ AUTO-SELECT DATED CSVs FROM DB (HYphen FORMAT; ASSUME 2025 IF YEAR OMITTED)
         if not _chosen:
             print("DB DEBUG — found in /app/db:", ", ".join(f.name for f in DB_DIR.glob("*.csv")) or "(none)")
             print("DB DEBUG — wanted days:", _want)
-            print("DB DEBUG — by_ymd keys:", list(_by_ymd.keys())[:10], "…", f"({len(_by_ymd)} total)")
-            print("DB DEBUG — by_md  keys:", list(_by_md.keys())[:10],  "…", f"({len(_by_md)} total)")
             print("Error Report:"); print("No matching CSVs found in db for requested date(s)."); raise SystemExit(1)
         _extra = [str(Path(p).resolve()) for p in _user_args if Path(p).is_file()]
         csv_paths = _chosen + _extra
         print("SELECTED FROM DB:", ", ".join(Path(p).name for p in csv_paths[:20]))
 
+TRADE–ZONE DURATIONS (SAFETY)
+- When summarizing durations from a dict keyed by (trade, zone), avoid brittle comprehensions with mis-typed variables.
+- Use a helper:
+
+    def _durations_for_trade(dur_sec_by_trade_zone, tr):
+        rows = []
+        for (t, z), dur in dur_sec_by_trade_zone.items():
+            if t == tr:
+                rows.append((z, float(dur)))
+        return rows
+
+  Then: items = _durations_for_trade(dur_sec_by_trade_zone, tr)
+
 SANITY CHECKS (MANDATORY BEFORE ANY ANALYSIS)
 - Run these checks right after ROOT/LOGO/FLOORJSON/ZONES_JSON are defined and BEFORE DB auto-select or ingest:
 
-    # Naming sanity / alias to prevent NameError typos
+    # alias to prevent NameError typos
     try:
         FLOJSON = FLOORJSON
     except NameError:
@@ -311,21 +308,14 @@ SANITY CHECKS (MANDATORY BEFORE ANY ANALYSIS)
     from pathlib import Path as _P
 
     _missing = []
-
-    # 1) MAC map is REQUIRED
     _mac_map = ROOT / "trackable_objects.json"
     if not _mac_map.exists():
         _missing.append("trackable_objects.json (MAC map) not found at " + str(_mac_map))
 
-    # 2) Zones & floorplan are OPTIONAL; warn if missing
-    _zones = ROOT / "zones.json"
-    _warn_zones = not _zones.exists()
-    _floorjson = ROOT / "floorplans.json"
-    _warn_floor = not _floorjson.exists()
-    _logo = ROOT / "redpoint_logo.png"
-    _warn_logo = not _logo.exists()
+    _zones = ROOT / "zones.json";       _warn_zones  = not _zones.exists()
+    _floorjson = ROOT / "floorplans.json"; _warn_floor = not _floorjson.exists()
+    _logo = ROOT / "redpoint_logo.png"; _warn_logo   = not _logo.exists()
 
-    # 3) Outdir must be writable
     try:
         out_dir.mkdir(parents=True, exist_ok=True)
         with tempfile.NamedTemporaryFile(dir=str(out_dir), prefix=".__wtest__", delete=True) as _tmp:
@@ -333,7 +323,6 @@ SANITY CHECKS (MANDATORY BEFORE ANY ANALYSIS)
     except Exception as _e:
         print("Error Report:"); print(f"Output directory not writable: {out_dir} ({_e})"); raise SystemExit(1)
 
-    # 4) DB directory must exist when auto-select will be used
     _db_dir = ROOT / "db"
     _db_will_be_used = (len(sys.argv) < 3) or any(_P(p).is_dir() for p in sys.argv[2:])
     if _db_will_be_used and not _db_dir.exists():
@@ -344,14 +333,12 @@ SANITY CHECKS (MANDATORY BEFORE ANY ANALYSIS)
         for m in _missing: print(m)
         raise SystemExit(1)
 
-    # Notices (non-fatal)
     if _warn_logo:  print("NOTICE: redpoint_logo.png not found; PDF will be generated without logo.")
     if _warn_floor: print("NOTICE: floorplans.json not found; overlay will render without a floorplan image.")
     if _warn_zones: print("NOTICE: zones.json not found; zones will be skipped unless a zone_name is present.")
 
-    # Regex preflights (fail early if malformed)
     import re as _re
-    _ = _re.compile(r'(?P<a>.+?)\s+(?:to|through|thru|\-|–|—|\.\.|between)\s+(?P<b>.+)')  # range parser
+    _ = _re.compile(r'(?P<a>.+?)\s+(?:to|through|thru|\-|–|—|\.\.|between)\s+(?P<b>.+)')
     _ = _re.compile(r'(?:positions|postions)_(\d{4})-(\d{1,2})-(\d{1,2})\.csv$', _re.I)
     _ = _re.compile(r'(?:positions|postions)_(\d{1,2})-(\d{1,2})\.csv$', _re.I)
 
