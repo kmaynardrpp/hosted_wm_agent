@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# main.py — InfoZone generator/runner with runtime repair (Docker/EC2-ready; GV/GC shared)
+# main.py — InfoZone generator/runner with compile+runtime repair (GC)
 from __future__ import annotations
 
 import argparse
@@ -23,8 +23,14 @@ FALLBACK_MODELS = ["gpt-4o-mini", "gpt-4o", "gpt-4.1-mini", "gpt-4.1"]
 ENV_MODEL = os.environ.get("OPENAI_MODEL", "").strip()
 
 # Reasoning effort & output tokens
-REASONING_EFFORT = os.environ.get("IZ_REASONING_EFFORT", os.environ.get("OPENAI_REASONING_EFFORT", "medium")).lower()
-MAX_OUTPUT_TOKENS = int(os.environ.get("IZ_MAX_OUTPUT_TOKENS", os.environ.get("OPENAI_MAX_OUTPUT_TOKENS", "12000")))
+REASONING_EFFORT = os.environ.get(
+    "IZ_REASONING_EFFORT",
+    os.environ.get("OPENAI_REASONING_EFFORT", "medium")
+).lower()
+MAX_OUTPUT_TOKENS = int(os.environ.get(
+    "IZ_MAX_OUTPUT_TOKENS",
+    os.environ.get("OPENAI_MAX_OUTPUT_TOKENS", "12000")
+))
 
 # Size caps (trim large inputs to improve robustness/speed)
 GUIDELINES_CAP = int(os.environ.get("IZ_GUIDELINES_CAP", "0") or "0")  # 0 = no cap
@@ -32,7 +38,12 @@ CONTEXT_CAP    = int(os.environ.get("IZ_CONTEXT_CAP", "8000"))
 HELPER_CAP     = int(os.environ.get("IZ_HELPER_CAP", "8000"))
 
 # Repair attempts
-REPAIR_RETRIES = int(os.environ.get("IZ_REPAIR_RETRIES", "3"))
+COMPILE_RETRIES = int(os.environ.get("IZ_COMPILE_RETRIES", "3"))
+RUNTIME_RETRIES = int(os.environ.get("IZ_REPAIR_RETRIES", "3"))
+
+# Caps for repair payloads
+REPAIR_CODE_CAP = int(os.environ.get("IZ_REPAIR_CODE_CAP", "40000"))
+REPAIR_LOG_CAP  = int(os.environ.get("IZ_REPAIR_LOG_CAP", "20000"))
 
 TIMEOUT_SEC = int(os.environ.get("RTLS_CODE_TIMEOUT_SEC", "1800"))
 RUNS_DIR = ".runs"
@@ -77,6 +88,11 @@ def extract_code_block(text: str) -> str:
 def strip_fences(code: str) -> str:
     return re.sub(r'^\s*```(?:python)?\s*|\s*```\s*$', '', code, flags=re.IGNORECASE | re.DOTALL).strip()
 
+def _clip(s: str, cap: int) -> str:
+    if cap and len(s) > cap:
+        return s[:cap] + f"\n\n…[truncated to {cap} chars]…"
+    return s
+
 def code_is_skeletal(code: str) -> Tuple[bool, List[str]]:
     """Lightweight validation to nudge repairs before execution."""
     issues: List[str] = []
@@ -97,18 +113,15 @@ def model_supports_reasoning(model: str) -> bool:
     m = (model or "").lower()
     return any(tag in m for tag in ("gpt-5", "o4", "o3", "reasoning", "thinking"))
 
-def _cap(trimmed: bool, full_default: int, trim_default: int) -> int:
+def _cap_size(trimmed: bool, full_default: int, trim_default: int) -> int:
     return trim_default if trimmed else full_default
-
-def _clip(s: str, cap: int) -> str:
-    if cap and len(s) > cap:
-        return s[:cap] + f"\n\n…[truncated to {cap} chars]…"
-    return s
 
 # ---------- Prompt builders ----------
 def build_system_message(project_dir: Path) -> str:
-    sys_prompt = read_text(project_dir / "system_prompt.txt",
-                           max_chars=(GUIDELINES_CAP if GUIDELINES_CAP > 0 else None)).strip()
+    sys_prompt = read_text(
+        project_dir / "system_prompt.txt",
+        max_chars=(GUIDELINES_CAP if GUIDELINES_CAP > 0 else None)
+    ).strip()
     if not sys_prompt:
         sys_prompt = "You are a code generator that returns one Python script as a single code block."
     sys_prompt += (
@@ -118,11 +131,13 @@ def build_system_message(project_dir: Path) -> str:
     return sys_prompt
 
 def build_user_message(user_prompt: str, csv_paths: List[str], project_dir: Path, trimmed: bool=False) -> str:
-    context_cap = _cap(trimmed, CONTEXT_CAP, 4000)
-    helper_cap  = _cap(trimmed, HELPER_CAP, 4000)
+    context_cap = _cap_size(trimmed, CONTEXT_CAP, 4000)
+    helper_cap  = _cap_size(trimmed, HELPER_CAP, 4000)
 
-    guidelines = read_text(project_dir / "guidelines.txt",
-                           max_chars=(GUIDELINES_CAP if GUIDELINES_CAP > 0 else None))
+    guidelines = read_text(
+        project_dir / "guidelines.txt",
+        max_chars=(GUIDELINES_CAP if GUIDELINES_CAP > 0 else None)
+    )
     context    = read_text(project_dir / "context.txt", max_chars=context_cap)
 
     helpers = [
@@ -141,7 +156,10 @@ def build_user_message(user_prompt: str, csv_paths: List[str], project_dir: Path
         if txt:
             helper_snips += [f"\n>>> {fname}\n", txt]
 
-    floorplan = next((project_dir / n for n in ("floorplan.jpeg","floorplan.jpg","floorplan.png") if (project_dir / n).exists()), None)
+    floorplan = next(
+        (project_dir / n for n in ("floorplan.jpeg", "floorplan.jpg", "floorplan.png") if (project_dir / n).exists()),
+        None
+    )
     assets_lines = "\n".join([
         f" - floorplan.(jpeg|jpg|png) : {'present' if floorplan else 'missing'}",
         f" - redpoint_logo.png : {'present' if (project_dir/'redpoint_logo.png').exists() else 'missing'}",
@@ -256,7 +274,7 @@ def build_user_message(user_prompt: str, csv_paths: List[str], project_dir: Path
         "  df = pd.DataFrame(raw.get('rows', []))\n"
         "  if df.columns.duplicated().any(): df = df.loc[:, ~df.columns.duplicated()]\n"
         "  xn = pd.to_numeric(df.get('x',''), errors='coerce'); yn = pd.to_numeric(df.get('y',''), errors='coerce')\n"
-        "  # GV POINT IGNORE\n"
+        "  # GC crop rule\n"
         "  df = df.loc[(xn >= 12000) & (yn >= 15000)].copy()\n"
         "  src = df['ts_iso'] if 'ts_iso' in df.columns else (df['ts'] if 'ts' in df.columns else '')\n"
         "  df['ts_utc'] = pd.to_datetime(src, utc=True, errors='coerce')\n"
@@ -332,7 +350,7 @@ Requirements:
 - Resolve ROOT from INFOZONE_ROOT or __file__; OUT_DIR = INFOZONE_OUT_DIR or first CSV dir (mkdir -p).
 - If csv_paths is empty or contains directories, parse dates from the prompt and auto-select from ROOT/db using hyphen filenames with inclusive ranges and year=2025 when missing.
 - Import local helpers; save PDF/PNGs to OUT_DIR; print file:/// links exactly (use _print_links).
-- Per-file processing; - Priority floor filter: default crop (x>=12000 & y>=15000), but if IGNORE_X and IGNORE_Y env are set, drop ONLY that exact point instead."
+- Per-file processing; GC crop (x>=12000 & y>=15000); use dt.floor("h"); tables only if explicitly requested.
 
 CSV INPUTS:
 {csv_lines}
@@ -364,7 +382,7 @@ def responses_create_text(client: OpenAI, model: str, system_msg: str, user_msg:
     print(f"[{now_ts()}] [DEBUG] Raw response length: {len(raw)}")
     return raw
 
-# ---------- Generate / Compile / Run / Repair ----------
+# ---------- Generate / Compile / Run / Robust Repairs ----------
 def try_models_with_retries(client: OpenAI, models: List[str],
                             system_msg: str, user_full: str, user_trimmed: str, user_min: str) -> Tuple[str, str]:
     errors: List[str] = []
@@ -378,15 +396,15 @@ def try_models_with_retries(client: OpenAI, models: List[str],
                     print(f"[{now_ts()}] [INFO] Code block OK with model={m} variant={variant}")
                     return m, code
 
+                # Validation-level repair
                 print(f"[{now_ts()}] [WARN] Code failed validation ({issues}). Retrying with REPAIR prompt.")
                 repair_prompt = (
                     msg
                     + "\n\nREPAIR-STRUCTURE (MANDATORY):\n"
                     + "- Keep ROOT/out_dir/imports. Use DB auto-select (hyphen patterns), inclusive ranges, assume 2025; print 'SELECTED FROM DB:'.\n"
-                    + "- Include MAC-map audit guard + smoke log; fail fast if mac_map not loaded or mac_hits==0.\n"
-                    + "- Priority floor filter: default crop (x>=12000 & y>=15000), but if IGNORE_X and IGNORE_Y env are set, drop ONLY that exact point instead.\n"
+                    + "- Include MAC-map audit guard + smoke log; GC crop (x>=12000 & y>=15000); use ts_utc; dt.floor('h').\n"
                     + "- Floorplan 'selected==1' selection; regex preflights; asset/DB sanity; safe _print_links.\n"
-                    + "- Ensure the script compiles with compile(...,'exec').\n"
+                    + "- The script MUST compile with compile(...,'exec').\n"
                     + f"- Structural issues to fix: {', '.join(issues)}\n"
                 )
                 raw2 = responses_create_text(client, m, system_msg, repair_prompt)
@@ -400,6 +418,7 @@ def try_models_with_retries(client: OpenAI, models: List[str],
                 print(f"[{now_ts()}] [ERROR] Responses call failed (model={m}, variant={variant}): {e}", file=sys.stderr)
                 errors.append(f"{m}/{variant}: {e}")
 
+        # Minimal emergency
         try:
             raw3 = responses_create_text(client, m, system_msg, user_min)
             code3 = strip_fences(extract_code_block(raw3))
@@ -414,33 +433,52 @@ def try_models_with_retries(client: OpenAI, models: List[str],
 
     raise RuntimeError("All model attempts failed. Last errors:\n" + "\n".join(errors))
 
-def compile_or_repair_syntax(client: OpenAI, model: str, system_msg: str, user_msg_full: str, code_text: str) -> Tuple[bool, str]:
+def compile_with_retries(client: OpenAI, model: str, system_msg: str,
+                         user_msg_full: str, code_text: str) -> Tuple[bool, str]:
+    """
+    Try to compile. If it fails, run up to COMPILE_RETRIES repair attempts.
+    Each attempt includes the broken code and demands a pure-syntax re-check.
+    """
+    for attempt in range(1, COMPILE_RETRIES + 1):
+        try:
+            compile(code_text, "<generated>", "exec")
+            return True, code_text
+        except SyntaxError as e:
+            err_line = (e.text or "").strip()
+            err_msg  = f"{e.msg} at line {e.lineno}: {err_line}"
+            print(f"[{now_ts()}] [ERROR] Compile failed (attempt {attempt}/{COMPILE_RETRIES}): {err_msg}", file=sys.stderr)
+
+            # Send the broken code (capped) and demand a syntax audit
+            broken_capped = _clip(code_text, REPAIR_CODE_CAP)
+            repair_prompt = (
+                "MAIN PRIORITY: FIX THE PYTHON SCRIPT (COMPILATION MUST SUCCEED)\n"
+                "- You are given a broken Python script. Repair it WITHOUT changing behavior/IO semantics.\n"
+                "- Perform a strict PYTHON SYNTAX AUDIT before returning:\n"
+                "  • All 'if/elif/else/try/except/finally/for/while/def/class' lines end with ':'\n"
+                "  • Every block is indented consistently (4 spaces ok), no empty blocks (use 'pass' if needed)\n"
+                "  • Balanced (), [], {}, and quotes; no unterminated f-strings; no stray backslashes\n"
+                "  • Every 'try:' has at least one 'except' or 'finally'\n"
+                "  • Regex named groups use (?P<a>) / (?P<b>) — NEVER '(?P>)'\n"
+                "  • Define and USE _print_links(pdf_path, png_paths) — no inline nested f-strings for links\n"
+                "  • Constants exist: ROOT, LOGO, FLOORJSON, ZONES_JSON, out_dir (no misspellings)\n"
+                "  • Keep DB auto-select (hyphen filenames), inclusive ranges, ASSUME 2025; MAC-map audit guard; GC crop\n"
+                "  • Do NOT introduce utcnow(); use timezone-aware now only if needed\n"
+                "\n--- COMPILER ERROR ---\n"
+                f"{err_msg}\n"
+                "\n--- BROKEN SCRIPT (capped) ---\n"
+                f"{broken_capped}\n"
+            )
+            raw = responses_create_text(client, model, system_msg, user_msg_full + "\n\n" + repair_prompt)
+            code_text = strip_fences(extract_code_block(raw))
+            # loop continues to re-compile on the next iteration
+
+    # last attempt: try compiling once more, return failure if still broken
     try:
         compile(code_text, "<generated>", "exec")
         return True, code_text
-    except SyntaxError as e:
-        err_line = (e.text or "").strip()
-        err_msg  = f"{e.msg} at line {e.lineno}: {err_line}"
-        print(f"[{now_ts()}] [ERROR] Compile failed: {err_msg}", file=sys.stderr)
-
-        repair_prompt = (
-            user_msg_full
-            + "\n\nREPAIR-SYNTAX (TOP PRIORITY: FIX THE PYTHON SCRIPT):\n"
-            + "- Fix ALL syntax/name/scope errors so compile(...,'exec') succeeds WITHOUT changing behavior.\n"
-            + "- Replace ANY inline link printing with safe helper _print_links (avoid nested f-strings).\n"
-            + "- Use correct named regex groups (?P<a>) and (?P<b>) for range parsing; keep hyphen DB patterns & inclusive ranges; assume 2025 if needed.\n"
-            + "- Ensure constants exist (ROOT, LOGO, FLOORJSON, ZONES_JSON, out_dir). No misspellings.\n"
-            + "- Avoid utcnow() deprecation (use timezone-aware now if needed).\n"
-            + f"- Compiler error to fix: {err_msg}\n"
-        )
-        raw = responses_create_text(client, model, system_msg, repair_prompt)
-        fixed = strip_fences(extract_code_block(raw))
-        try:
-            compile(fixed, "<generated>", "exec")
-            return True, fixed
-        except SyntaxError as e2:
-            print(f"[{now_ts()}] [ERROR] Compile failed again: {e2.msg} at line {e2.lineno}: {e2.text}", file=sys.stderr)
-            return False, fixed
+    except SyntaxError as e2:
+        print(f"[{now_ts()}] [ERROR] Compile failed after retries: {e2.msg} at line {e2.lineno}: {e2.text}", file=sys.stderr)
+        return False, code_text
 
 def run_script(script_path: Path, user_prompt: str, csv_paths: List[str], project_dir: Path) -> Tuple[int, str, str]:
     cmd = [sys.executable, str(script_path), user_prompt] + csv_paths
@@ -448,21 +486,19 @@ def run_script(script_path: Path, user_prompt: str, csv_paths: List[str], projec
     env = os.environ.copy()
     env["PYTHONPATH"]    = str(project_dir) + os.pathsep + env.get("PYTHONPATH", "")
     env["INFOZONE_ROOT"] = str(project_dir)
-    proc = subprocess.run(cmd, cwd=str(project_dir), env=env,
-                          stdout=subprocess.PIPE, stderr=subprocess.PIPE,
-                          text=True, timeout=TIMEOUT_SEC)
+    proc = subprocess.run(
+        cmd, cwd=str(project_dir), env=env,
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+        text=True, timeout=TIMEOUT_SEC
+    )
     return proc.returncode, proc.stdout or "", proc.stderr or ""
 
 def runtime_repair_loop(client: OpenAI, model: str, system_msg: str, user_msg_full: str,
                         code_text: str, project_dir: Path, user_prompt: str, csv_paths: List[str]) -> Tuple[int, str, str]:
-    """
-    Try to run the script; if it fails (non-zero exit), ask model to FIX the Python script.
-    Up to REPAIR_RETRIES attempts.
-    """
     runs_dir = project_dir / RUNS_DIR
     ensure_dir(runs_dir)
 
-    for attempt in range(1, REPAIR_RETRIES + 1):
+    for attempt in range(1, RUNTIME_RETRIES + 1):
         script_path = runs_dir / f"rtls_run_{now_stamp()}.py"
         script_path.write_text(code_text, encoding="utf-8")
         print(f"[{now_ts()}] [INFO] Wrote generated script to {script_path}")
@@ -471,24 +507,18 @@ def runtime_repair_loop(client: OpenAI, model: str, system_msg: str, user_msg_fu
         if rc == 0:
             return rc, out, err
 
-        # Build a targeted repair prompt with full context
-        print(f"[{now_ts()}] [WARN] Script exited rc={rc}. Attempting runtime repair ({attempt}/{REPAIR_RETRIES}).")
+        print(f"[{now_ts()}] [WARN] Script exited rc={rc}. Attempting runtime repair ({attempt}/{RUNTIME_RETRIES}).")
         failed_code = script_path.read_text(encoding="utf-8", errors="ignore")
-        # Cap very large payloads
-        cap_code = int(os.environ.get("IZ_REPAIR_CODE_CAP", "40000"))
-        cap_log  = int(os.environ.get("IZ_REPAIR_LOG_CAP", "20000"))
-        failed_code_c = _clip(failed_code, cap_code)
-        out_c = _clip(out, cap_log)
-        err_c = _clip(err, cap_log)
+        failed_code_c = _clip(failed_code, REPAIR_CODE_CAP)
+        out_c = _clip(out, REPAIR_LOG_CAP)
+        err_c = _clip(err, REPAIR_LOG_CAP)
 
         repair_msg = (
             user_msg_full
             + "\n\n=== MAIN PRIORITY: FIX THE PYTHON SCRIPT ===\n"
-            + "The following Python script failed at runtime. Do NOT change the scope or outputs; ONLY fix the code so it runs end-to-end.\n"
-            + "- Keep DB auto-select (hyphen filenames), inclusive ranges, assume 2025 when missing years.\n"
-            + "- Keep MAC-map audit guard + smoke log; keep floor filter / point-ignore exactly as specified.\n"
-            + "- Use safe _print_links; correct named regex groups (?P<a>)(?P<b>); avoid utcnow() deprecation.\n"
-            + "- If a NameError came from mis-typed variables in comprehensions (e.g., zone vs z), replace with an explicit helper.\n"
+            + "The following Python script failed at runtime. Do NOT change scope/outputs; ONLY fix the code so it runs end-to-end.\n"
+            + "- Keep DB auto-select (hyphen filenames), inclusive ranges, assume 2025; MAC-map audit guard; GC crop; safe _print_links.\n"
+            + "- Fix NameErrors from mis-typed loop variables (replace brittle comprehensions with helpers if needed).\n"
             + "- Ensure constants exist (ROOT, LOGO, FLOORJSON, ZONES_JSON, out_dir) and are correctly referenced.\n"
             + "\n--- EXIT CODE ---\n"
             + f"{rc}\n"
@@ -503,13 +533,12 @@ def runtime_repair_loop(client: OpenAI, model: str, system_msg: str, user_msg_fu
         raw = responses_create_text(client, model, system_msg, repair_msg)
         code_text = strip_fences(extract_code_block(raw))
 
-        ok, code_text = compile_or_repair_syntax(client, model, system_msg, user_msg_full, code_text)
+        ok, code_text = compile_with_retries(client, model, system_msg, user_msg_full, code_text)
         if not ok:
-            # If syntax still broken after a compile repair, continue loop for another try
+            # keep looping to try another runtime repair if compile still bad
             continue
 
-    # After retries, write last attempt for debugging and return failure
-    last_path = (project_dir / RUNS_DIR / f"rtls_run_{now_stamp()}_last.py")
+    last_path = project_dir / RUNS_DIR / f"rtls_run_{now_stamp()}_last.py"
     last_path.write_text(code_text, encoding="utf-8")
     print(f"[{now_ts()}] [ERROR] Exhausted runtime repair attempts. Last script saved to {last_path}", file=sys.stderr)
     return 1, "", "Runtime repair attempts exhausted."
@@ -536,20 +565,19 @@ def generate_and_run(user_prompt: str, csv_paths: List[str], project_dir: Path) 
     model_list += [m for m in FALLBACK_MODELS if m not in model_list]
     print(f"[{now_ts()}] [INFO] Model preference order: {model_list}")
 
-    # First pass: generate code (with structural validation & minimal fallback)
+    # Generate (with validation/repair) -> code
     model_used, code_text = try_models_with_retries(client, model_list, system_msg, user_msg_full, user_msg_trimmed, user_msg_minimal)
     print(f"[{now_ts()}] [INFO] Using model: {model_used}")
     print(f"[{now_ts()}] [INFO] Final code length: {len(code_text)} chars")
 
-    # Compile or perform syntax repair once
-    ok, code_text = compile_or_repair_syntax(client, model_used, system_msg, user_msg_full, code_text)
+    # Compile with retries (pure-syntax repairs allowed)
+    ok, code_text = compile_with_retries(client, model_used, system_msg, user_msg_full, code_text)
     if not ok:
         return 4
 
-    # Runtime: run; if it fails, enter runtime repair loop (up to REPAIR_RETRIES)
+    # Run; if non-zero exit, runtime repair loop
     rc, out, err = runtime_repair_loop(client, model_used, system_msg, user_msg_full, code_text, project_dir, user_prompt, csv_paths)
 
-    # Pass through child output
     if out:
         print(out, end="")
     if err:
@@ -558,9 +586,9 @@ def generate_and_run(user_prompt: str, csv_paths: List[str], project_dir: Path) 
 
 # ---------- CLI ----------
 def main():
-    ap = argparse.ArgumentParser(description="Generate analysis code and execute locally (container-safe paths) with runtime repair.")
+    ap = argparse.ArgumentParser(description="Generate analysis code and execute locally (container-safe paths) with robust repairs.")
     ap.add_argument("prompt", help="User prompt for the analysis (quoted)")
-    ap.add_argument("csv", nargs="*", help="CSV path(s) or directories (optional; DB auto-select will parse dates from the prompt)")
+    ap.add_argument("csv", nargs="*", help="CSV path(s) or directories (optional; DB auto-select parses dates from the prompt)")
     args = ap.parse_args()
 
     project_dir = Path(__file__).resolve().parent
