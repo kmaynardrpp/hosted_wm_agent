@@ -29,13 +29,13 @@ REASONING_EFFORT = os.environ.get(
 ).lower()
 MAX_OUTPUT_TOKENS = int(os.environ.get(
     "IZ_MAX_OUTPUT_TOKENS",
-    os.environ.get("OPENAI_MAX_OUTPUT_TOKENS", "12000")
+    os.environ.get("OPENAI_MAX_OUTPUT_TOKENS", "24000")
 ))
 
 # Size caps (trim large inputs to improve robustness/speed)
 GUIDELINES_CAP = int(os.environ.get("IZ_GUIDELINES_CAP", "0") or "0")  # 0 = no cap
-CONTEXT_CAP    = int(os.environ.get("IZ_CONTEXT_CAP", "8000"))
-HELPER_CAP     = int(os.environ.get("IZ_HELPER_CAP", "8000"))
+CONTEXT_CAP    = int(os.environ.get("IZ_CONTEXT_CAP", "30000"))
+HELPER_CAP     = int(os.environ.get("IZ_HELPER_CAP", "30000"))
 
 # Repair attempts
 COMPILE_RETRIES = int(os.environ.get("IZ_COMPILE_RETRIES", "3"))
