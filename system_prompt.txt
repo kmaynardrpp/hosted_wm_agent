@@ -359,6 +359,99 @@ LARGE-DATA MODE (multi-day, ~200MB)
 - After each file: `del` large DataFrames and `plt.close('all')` (only after PNG export).
 - Respect budgets from `report_limits.py` and config limits.
 
+OVERLAY–TABLE PARITY (MANDATORY) — one canonical source of truth
+
+Goal: The floorplan overlay must show the same hours by zone that appear in the tables. Do not join on raw names. Use one canonicalization path and one hours dictionary.
+
+Rules (generator must implement):
+
+Single canonicalizer for every zone string
+Define once and reuse everywhere (rows, intervals, polygons, labels):
+
+import re as _re
+_CANON = {
+    "sales floor": "Sales Floor", "breakroom": "Breakroom", "receiving": "Receiving",
+    "restroom": "Restroom", "deli": "Deli", "pickup": "Pickup", "fet": "FET",
+    "training": "Training", "pharmacy": "Pharmacy", "personnel": "Personnel",
+    "prep": "Prep", "vestibule": "Vestibule", "trailer": "Trailer",
+}
+_STOP = {"zone","area","aisle","hall","hallway","bay","dock","office","dept","department",
+         "section","room","floor","backroom","front","front-end","storage","active","inactive","gr"}
+def canon_zone(s: str) -> str:
+    s = (s or "").strip().lower()
+    s = _re.sub(r"^\s*zone\s*\d+(\.\d+)?\s*-\s*", "", s)        # drop "Zone <n> - "
+    s = s.replace("back room", "backroom")
+    for k,v in _CANON.items():
+        if k in s: return v
+    toks = [t for t in _re.findall(r"[a-z]+", s) if t not in _STOP]
+    return (toks[-1].title() if toks else (s.title() if s else ""))
+
+
+Aggregate durations by canonical zone (seconds → hours once):
+
+When using zone_name from data or from compute_zone_intervals, canonicalize before inserting into the map and skip “Trailer”:
+
+# seconds by (trade, canon_zone)
+dur_sec_by_trade_zone[(trade, canon_zone(zone))] += duration_sec
+
+
+For a given trade, build hours only from this map:
+
+zone_hours = {}
+for (t, z), sec in dur_sec_by_trade_zone.items():
+    if t == this_trade:
+        zone_hours[z] = zone_hours.get(z, 0.0) + (float(sec) / 3600.0)
+
+
+(No alternative hours computation is allowed for overlays.)
+
+Canonicalize polygon names and use them for lookup and labels:
+
+polys = [{"name": canon_zone(z.get("name","")), "poly": z.get("polygon")}
+         for z in (zones_list or []) if (z.get("polygon") and len(z["polygon"])>=3)]
+# When coloring each polygon:
+val = float(zone_hours.get(poly["name"], 0.0))      # ← lookup by canonical name
+label_name = poly["name"]                           # ← label with canonical name
+
+
+Join audit (must run once per trade before drawing):
+
+# If no polygon names match hours keys, fix before drawing.
+unmatched = {p["name"] for p in polys} - set(zone_hours.keys())
+if unmatched and sum(zone_hours.values()) > 0:
+    # DEV-DEBUG (one-line print is OK):
+    # print("DEBUG zone join mismatch:", sorted(list(unmatched))[:5])
+    pass  # do not alter zone_hours; polygons with no hours get neutral color
+
+
+If a polygon has zero hours after this step, fill neutral grey and label as “0.0h”; do not invent values.
+
+Color scale stability:
+
+Build normalization from non-zero hours:
+nz = [v for v in zone_hours.values() if v > 0]
+vmax = max(nz) if nz else 1.0; vmin = min(nz) if nz else 0.0
+
+If all zeros, keep the legend but color every polygon neutral.
+
+Never mix raw and canonical keys
+
+All dictionaries and lookups must use canonical names only.
+
+Tables print canonical names; overlays label polygons with the same canonical names.
+
+Trailer policy
+
+After canonicalization, ignore “Trailer” in aggregation and overlays; do not draw or include it in legends.
+
+Acceptance checklist (generator must satisfy):
+
+A zone that appears in the table with hours shows non-zero color on the overlay.
+
+Overlay labels exactly match table labels (canonical names such as Sales Floor, Breakroom, FET, Training).
+
+No raw "Zone <n> - ..." strings are rendered anywhere.
+
 CODE SANITY (binding)
 - The emitted Python MUST successfully parse with `compile(code, "<generated>", "exec")`.
 - Prefer f-strings; for schema prints:
