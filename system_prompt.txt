@@ -452,6 +452,72 @@ Overlay labels exactly match table labels (canonical names such as Sales Floor, 
 
 No raw "Zone <n> - ..." strings are rendered anywhere.
 
+FLOORPLAN UNITS & EXTENT AUTOFIX (MANDATORY for overlays)
+
+Goal: The raster and world (mm) coordinates must share the same scale and extent. If the scale in floorplans.json is off by ×10/×100/×1000 (or wrong units), correct it before plotting.
+
+Selection rule (do first):
+
+From floorplans.json, choose the entry with "selected": 1 that also matches the raster filename (display_name/filename basename).
+
+If none selected, match by filename; else fall back to the first plan.
+(Keep this logic identical in both GC and GV.)
+
+Unit handling (do next):
+
+Treat image_scale as mm per pixel by default. If a units field exists:
+
+"mm_per_px" → use as-is
+
+"cm_per_px" → scale_mm_per_px = image_scale * 10
+
+"m_per_px" → scale_mm_per_px = image_scale * 1000
+
+Autofix when units are unknown or inconsistent:
+
+Compute robust data span:
+x_rng = q95(x) − q05(x), y_rng = q95(y) − q05(y) (after dropping NaNs).
+If either is 0, skip autofix.
+
+Build candidate scales from the raw value:
+[s, s*10, s*100, s*1000, s/10, s/100, s/1000] (clip positives only).
+
+For each candidate:
+
+w_meta_mm = width_px * s_candidate
+
+h_meta_mm = height_px * s_candidate
+
+score = max(w_meta_mm/x_rng, x_rng/w_meta_mm, h_meta_mm/y_rng, y_rng/h_meta_mm)
+
+Pick the candidate with the smallest score. If the best score > 8 (still wildly off), error out with a clear message (“Floorplan scale/units inconsistent with data; please verify image_scale in floorplans.json.”) instead of drawing a misleading overlay.
+
+Extent & draw (world mm):
+
+With scale_mm_per_px, compute:
+
+x_min = (x_c - width/2)  * scale_mm_per_px
+x_max = (x_c + width/2)  * scale_mm_per_px
+y_min = (y_c - height/2) * scale_mm_per_px
+y_max = (y_c + height/2) * scale_mm_per_px
+
+
+Plot the raster with:
+ax.imshow(img, extent=[x_min, x_max, y_min, y_max], origin='upper')
+
+Scatter points directly in world mm (ax.scatter(x, y, ...)) — do not re-scale or re-shift them.
+
+One-time diagnostics (print once if autofix applied):
+
+print(f"UNIT AUTOFIX: raw={image_scale:g}, chosen_mm_per_px={scale_mm_per_px:g}, "
+      f"data_xrng≈{x_rng:.0f}mm, meta_w≈{w_meta_mm:.0f}mm")
+
+
+Failure policy: If image or plan cannot be aligned (no reasonable candidate), stop with an Error Report rather than drawing a corner blob.
+
+This block supersedes any hard-coded scale = image_scale * 100 logic; the generator must follow the mm/px + autofix procedure above for every overlay.
+
+
 CODE SANITY (binding)
 - The emitted Python MUST successfully parse with `compile(code, "<generated>", "exec")`.
 - Prefer f-strings; for schema prints:
